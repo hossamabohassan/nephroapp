@@ -1,0 +1,2779 @@
+﻿<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nephromap! â€” [TOPIC] Viva</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <!-- Export Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root{
+      --radius: 1rem;
+      --shadow-1: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-hover: 0 8px 20px rgba(0,0,0,0.12);
+      --grad-1: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.12) 100%);
+      --grad-2: linear-gradient(135deg, rgba(251, 113, 133, 0.15) 0%, rgba(245, 101, 101, 0.12) 100%);
+      --grad-3: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 197, 253, 0.12) 100%);
+      --grad-4: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(134, 239, 172, 0.12) 100%);
+      --grad-5: linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(254, 215, 170, 0.12) 100%);
+      --grad-6: linear-gradient(135deg, rgba(168, 237, 234, 0.18) 0%, rgba(254, 214, 227, 0.15) 100%);
+      --grad-7: linear-gradient(135deg, rgba(255, 236, 210, 0.2) 0%, rgba(252, 182, 159, 0.15) 100%);
+      --grad-8: linear-gradient(135deg, rgba(255, 154, 158, 0.15) 0%, rgba(254, 207, 239, 0.12) 100%);
+      --card-bg: rgba(255,255,255,0.85);
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-orange: #f59e0b;
+      --accent-pink: #ec4899;
+    }
+    body{
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+        linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding-bottom: 1rem;
+      min-height: 100vh;
+    }
+    .nm-card{
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-1);
+      border: 1px solid rgba(99, 102, 241, 0.12);
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    .nm-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--grad-1);
+      opacity: 0;
+    }
+    .nm-card:hover{ 
+      box-shadow: var(--shadow-hover); 
+    }
+    .nm-card:hover::before {
+      opacity: 1;
+    }
+    .chip{
+      display:inline-block; padding:.4rem .8rem; border-radius:999px; font-size:.8rem; font-weight:600;
+      box-shadow: 0 2px 6px rgba(0,0,0,.1);
+      color: var(--text-primary);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+    }
+    .chip:hover {
+      box-shadow: 0 4px 10px rgba(0,0,0,.15);
+    }
+    .quick-ref-content {
+      background: white;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(99, 102, 241, 0.12);
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
+      padding: 1.25rem;
+    }
+    .quick-ref-content > :last-child {
+      margin-bottom: 0;
+    }
+    .differential-focus {
+      background: rgba(59, 130, 246, 0.04);
+      border: 1px dashed rgba(59, 130, 246, 0.45);
+      border-radius: 0.85rem;
+      padding: 1.25rem;
+    }
+    .differential-focus .table {
+      background: white;
+      margin-bottom: 0;
+    }
+    .concept-diagram {
+      background: rgba(139, 92, 246, 0.08);
+      border-radius: 0.85rem;
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      padding: 1.25rem;
+    }
+    .concept-diagram > :last-child {
+      margin-bottom: 0;
+    }
+    .safety-list li,
+    .communication-list li {
+      list-style: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.35rem;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.04);
+    }
+    .safety-list li {
+      border-left: 3px solid #ef4444;
+    }
+    .communication-list li {
+      border-left: 3px solid #0ea5e9;
+    }
+    .tone-light{ 
+      background: var(--grad-6); 
+      color: var(--text-primary); 
+    }
+    .tone-info{ 
+      background: var(--grad-1); 
+      color: var(--text-secondary);
+    }
+    
+    /* Enhanced Additional Notes Styling */
+    .additional-note,
+    section[id^="extra-note-"] {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      border: 2px solid #3b82f6;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .additional-note:hover,
+    section[id^="extra-note-"]:hover {
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+    }
+    
+    .additional-note::before,
+    section[id^="extra-note-"]::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981);
+    }
+    
+    .additional-note:hover {
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+    }
+    
+    .additional-note::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981);
+    }
+    
+    .additional-note .section-title,
+    section[id^="extra-note-"] .section-title {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      padding: 12px 16px;
+      margin: -12px -16px 16px -16px;
+      border-radius: 8px 8px 0 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .additional-note .section-title .icon-circle,
+    section[id^="extra-note-"] .section-title .icon-circle {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .additional-note .content-container,
+    section[id^="extra-note-"] .border.rounded.p-3.bg-white {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 0;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    
+    /* Enhanced content styling within additional notes */
+    .additional-note h1,
+    section[id^="extra-note-"] h1 {
+      color: #1e40af;
+      border-bottom: 2px solid #3b82f6;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    
+        .additional-note h2,
+    section[id^="extra-note-"] h2 {
+      color: #1e40af;
+      border-left: 4px solid #3b82f6;
+      padding-left: 12px;
+      margin: 20px 0 12px 0;
+    }
+
+    .additional-note h3,
+    section[id^="extra-note-"] h3 {
+      color: #374151;
+      font-weight: 600;
+      margin: 16px 0 8px 0;
+    }
+    
+        .additional-note table,
+    section[id^="extra-note-"] table {
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .additional-note table thead,
+    section[id^="extra-note-"] table thead {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+    }
+    
+    .additional-note table th {
+      padding: 12px;
+      font-weight: 600;
+      text-align: left;
+    }
+    
+    .additional-note table td {
+      padding: 10px 12px;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .additional-note table tbody tr:nth-child(even) {
+      background: #f8fafc;
+    }
+    
+    .additional-note table tbody tr:hover {
+      background: #eff6ff;
+    }
+    
+    .additional-note ul, .additional-note ol {
+      padding-left: 20px;
+    }
+    
+    .additional-note li {
+      margin-bottom: 6px;
+      line-height: 1.6;
+    }
+    
+    .additional-note strong {
+      color: #1e40af;
+      font-weight: 600;
+    }
+    
+    .additional-note .overflow-accordion {
+      margin-top: 16px;
+    }
+    
+    .additional-note .overflow-accordion .accordion-button {
+      background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+      border: 1px solid #cbd5e1;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .additional-note .overflow-accordion .accordion-button:not(.collapsed) {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+    }
+    
+    .additional-note .overflow-accordion .accordion-body {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    
+    /* Print-friendly styles */
+    @media print {
+      .additional-note {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 2px solid #000;
+      }
+      
+    }
+    .tone-warning{ 
+      background: var(--grad-7); 
+      color: var(--text-primary);
+    }
+    .tone-primary{ 
+      background: var(--grad-3); 
+      color: var(--text-secondary);
+    }
+    
+    /* Overflow Structure Styling */
+    .audit {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background: var(--grad-7);
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    
+    #extraInfoAccordion .accordion-button {
+      background: var(--grad-6);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      font-weight: 600;
+    }
+    
+    #extraInfoAccordion .accordion-button:not(.collapsed) {
+      background: var(--grad-1);
+      color: var(--text-primary);
+    }
+    
+    #extraInfoAccordion .accordion-body {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(99, 102, 241, 0.1);
+    }
+    
+    /* Overflow accordion in chat responses */
+    .overflow-accordion .accordion-button {
+      background: var(--grad-6);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .overflow-accordion .accordion-button:not(.collapsed) {
+      background: var(--grad-1);
+      color: var(--text-primary);
+    }
+    
+    .overflow-accordion .accordion-body {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(99, 102, 241, 0.1);
+      font-size: 0.9rem;
+    }
+    
+    /* Topic Header Styling */
+    #topic-header {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 197, 253, 0.08) 100%);
+      border: 2px solid rgba(59, 130, 246, 0.2);
+      position: relative;
+    }
+    
+    #topic-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    
+    .topic-title h1 {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .topic-author {
+      border-top: 1px solid rgba(59, 130, 246, 0.2);
+      padding-top: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .topic-author .lead {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    
+    /* Large screen adjustments */
+    @media (min-width: 1200px) {
+      .display-5 {
+        font-size: 2rem;
+      }
+    }
+    
+    /* Print-specific styling */
+    @media print {
+      #topic-header {
+        background: white !important;
+        border: 2px solid #3b82f6 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+        margin-bottom: 2rem;
+      }
+      
+      .topic-title h1 {
+        color: #3b82f6 !important;
+        -webkit-text-fill-color: #3b82f6 !important;
+        font-size: 2rem !important;
+        margin-bottom: 1rem !important;
+      }
+      
+      .topic-author {
+        border-top: 1px solid #3b82f6 !important;
+        padding-top: 1rem !important;
+      }
+      
+      .topic-author .lead {
+        color: #374151 !important;
+        font-size: 1rem !important;
+      }
+      
+      .topic-author .text-muted {
+        color: #6b7280 !important;
+        font-size: 0.9rem !important;
+      }
+    }
+    .tone-success{ 
+      background: var(--grad-4); 
+      color: var(--text-secondary);
+    }
+    .tone-emphasis{ 
+      background: var(--grad-2); 
+      color: var(--text-secondary);
+    }
+    .tone-special{
+      background: var(--grad-8);
+      color: var(--text-primary);
+    }
+    .avoid-break{ break-inside: avoid; page-break-inside: avoid; }
+    .safety-critical { border-left: 4px solid rgba(239, 68, 68, 0.6) !important; }
+    .safety-warning { border-left: 4px solid rgba(245, 158, 11, 0.6) !important; }
+    .safety-info { border-left: 4px solid rgba(59, 130, 246, 0.6) !important; }
+    /* =============================================================================
+       PRINT & PDF EXPORT SETTINGS - CUSTOMIZE THESE FOR YOUR NEEDS
+       ============================================================================= */
+    @media print{ 
+      /* Hide elements that shouldn't be printed */
+      .print-hide{ display:none !important; }
+      .scroll-to-top-btn{ display:none !important; } 
+      
+      /* Card styling for print */
+      .nm-card{ 
+        box-shadow:none !important; 
+        background:#fff !important; 
+        border: 1px solid #dee2e6 !important;
+        margin-bottom: 1rem !important;
+        padding: 1rem !important;
+      } 
+      
+      /* ASCII Flowchart settings for print */
+      .ascii-flow{ 
+        overflow: visible !important; 
+        max-height: none !important; 
+        height: auto !important; 
+        page-break-inside: avoid !important;
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        font-size: 12px !important;          /* â† FONT SIZE: Increased from 10px */
+        line-height: 1.3 !important;         /* â† LINE HEIGHT: Increased from 1.2 */
+        padding: 12px !important;            /* â† PADDING: Increased from 10px */
+        white-space: pre-wrap !important;
+        word-break: break-all !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* ASCII Flowchart without wrapping */
+      .ascii-flow.no-wrap {
+        white-space: pre-wrap !important;
+        word-break: break-all !important;
+        font-size: 11px !important;          /* â† SMALLER FONT for no-wrap: Increased from 9px */
+      }
+      
+      /* ASCII Flowchart label */
+      .ascii-flow::before {
+        font-size: 10px !important;
+        background: #e9ecef !important;
+        color: #495057 !important;
+        border: 1px solid #adb5bd !important;
+      }
+      
+      /* Page setup */
+      body { 
+        background: white !important; 
+        font-size: 18px !important;          /* â† BODY FONT SIZE: Increased for better readability */
+        line-height: 1.5 !important;         /* â† BODY LINE HEIGHT: Increased for better readability */
+      }
+      
+      /* Container settings */
+      .container, .container-fluid { 
+        max-width: 100% !important; 
+        margin: 0 !important; 
+        padding: 0 15px !important;          /* â† SIDE MARGINS: Adjust this value */
+      }
+      
+      /* Page margins and size */
+      @page {
+        size: A4;                             /* â† PAGE SIZE: Change to 'letter' for US */
+        margin: 0.5cm 0.5cm 1.5cm 0.5cm;     /* â† PAGE MARGINS: Added bottom margin for footer */
+      }
+      
+
+      
+      /* Minimize gaps between pages for 2-page printing */
+      
+      /* Overflow structure print styles */
+      #extraInfoAccordion .accordion-button {
+        background: #f8f9fa !important;
+        color: #000 !important;
+        border: 1px solid #dee2e6 !important;
+      }
+      
+      #extraInfoAccordion .accordion-collapse {
+        display: block !important;
+      }
+      
+      #extraInfoAccordion .accordion-button::after {
+        display: none !important;
+      }
+      
+      .audit {
+        background: #fff3cd !important;
+        color: #856404 !important;
+        border: 1px solid #ffeaa7 !important;
+      }
+      .nm-card {
+        margin-bottom: 0.5rem !important;     /* â† SECTION SPACING: Minimized for 2-page printing */
+        page-break-inside: avoid !important;
+        padding: 1rem !important;             /* â† SECTION PADDING: Minimized for 2-page printing */
+      }
+      
+      /* Reduce spacing between sections for 2-page printing */
+      .section-title {
+        margin-bottom: 0.25rem !important;    /* â† SECTION TITLE MARGIN: Minimized */
+      }
+      
+      /* Tighten list spacing for 2-page printing */
+      ul, ol {
+        margin-bottom: 0.25rem !important;    /* â† LIST MARGIN: Minimized */
+      }
+      
+      li {
+        margin-bottom: 0.1rem !important;     /* â† LIST ITEM MARGIN: Minimized */
+      }
+      
+      /* Text sizing for different elements */
+      h1 { font-size: 2.5rem !important; }   /* â† H1 SIZE: Increased for better readability */
+      h2 { font-size: 2rem !important; }     /* â† H2 SIZE: Increased for better readability */
+      h3 { font-size: 1.7rem !important; }   /* â† H3 SIZE: Increased for better readability */
+      p { font-size: 18px !important; }      /* â† PARAGRAPH SIZE: Increased for readability */
+      li { font-size: 18px !important; }     /* â† LIST ITEM SIZE: Increased for readability */
+      
+      /* Table settings */
+      .table {
+        font-size: 17px !important;          /* â† TABLE FONT SIZE: Increased for readability */
+        margin-bottom: 0.5rem !important;    /* â† TABLE MARGIN: Reduced for tighter layout */
+      }
+      
+      /* Chip/tag settings */
+      .chip {
+        font-size: 14px !important;          /* â† CHIP FONT SIZE: Increased for readability */
+        padding: 0.4rem 0.8rem !important;   /* â† CHIP PADDING: Increased for better spacing */
+        margin: 0.2rem 0.3rem 0.2rem 0 !important; /* â† CHIP MARGIN: Added for spacing */
+      }
+      
+      /* Section spacing */
+      .nm-card {
+        margin-bottom: 1rem !important;      /* â† SECTION SPACING: Reduced for tighter layout */
+        page-break-inside: avoid !important;
+        padding: 1.5rem !important;          /* â† SECTION PADDING: Reduced for tighter layout */
+      }
+      
+      /* Additional print improvements */
+      .section-title {
+        font-size: 1.6rem !important;        /* â† SECTION TITLE: Increased for better readability */
+        font-weight: bold !important;
+        margin-bottom: 0.5rem !important;    /* â† SECTION TITLE MARGIN: Reduced for tighter layout */
+      }
+      
+      .accordion-button {
+        font-size: 18px !important;          /* â† ACCORDION BUTTON: Increased for readability */
+        padding: 1rem 1.5rem !important;     /* â† ACCORDION BUTTON PADDING: Increased for spacing */
+      }
+      
+      .accordion-body {
+        font-size: 18px !important;          /* â† ACCORDION BODY: Increased for readability */
+        padding: 1.5rem !important;          /* â† ACCORDION BODY PADDING: Increased for spacing */
+      }
+      
+      /* List improvements for print */
+      ul, ol {
+        margin-bottom: 0.5rem !important;    /* â† LIST MARGIN: Reduced for tighter layout */
+        padding-left: 1.5rem !important;     /* â† LIST PADDING: Increased for better indentation */
+      }
+      
+      li {
+        margin-bottom: 0.25rem !important;   /* â† LIST ITEM MARGIN: Reduced for tighter layout */
+      }
+      
+      /* Ensure good contrast for print */
+      .text-muted {
+        color: #6c757d !important;
+      }
+      
+      .text-secondary {
+        color: #495057 !important;
+      }
+    }
+    .ascii-flow { 
+      font-family: 'Courier New', monospace; 
+      background: var(--grad-1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 0.75rem; 
+      padding: 1.5rem; 
+      max-width: 100%; 
+      overflow: auto; 
+      -webkit-overflow-scrolling: touch;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      position: relative;
+    }
+    .ascii-flow::before {
+      content: 'Algorithm';
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-blue);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: system-ui, sans-serif;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    .ascii-flow.wrap { white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; }
+    .ascii-flow.no-wrap { white-space: pre; }
+    header.header-gradient{
+      background: var(--grad-1);
+      color: var(--text-primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+    }
+    header.header-gradient::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23f3f4f6" opacity="0.3"><path d="M0,20 Q250,50 500,20 T1000,20 L1000,100 L0,100 Z"/></svg>');
+      background-size: cover;
+    }
+    header .fw-bold{ color: var(--text-primary); }
+    header .text-secondary{ color: var(--text-secondary) !important; }
+    .table thead th{ 
+      position: sticky; 
+      top: 0; 
+      background: var(--grad-1); 
+      color: var(--text-primary);
+      z-index: 1; 
+      border: none;
+      font-weight: 600;
+    }
+    .section-title{ 
+      display: flex; 
+      align-items: center; 
+      gap: 0.75rem; 
+      font-weight: 700; 
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .icon-circle{ 
+      width: 36px; 
+      height: 36px; 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center; 
+      border-radius: 50%; 
+      background: var(--grad-1); 
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
+      color: var(--accent-blue);
+      font-size: 1rem;
+    }
+    .icon-circle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    }
+    .accordion-button{ 
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8));
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 0.75rem !important;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .accordion-button:not(.collapsed){ 
+      background: var(--grad-1); 
+      color: var(--text-primary);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+    .accordion-button:focus {
+      box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.15);
+      border-color: var(--accent-blue);
+    }
+    .label-strong{ color: var(--accent-blue); font-weight: 700; }
+    .accent{ color: var(--accent-pink); font-weight: 700; }
+    .hl-symbol{ color: var(--accent-purple); font-weight: 700; padding: 0 0.2rem; background: rgba(139, 92, 246, 0.1); border-radius: 3px; }
+    
+    /* Enhanced AI Chat Message Styling */
+    .ai-message { 
+      max-width: 100%; 
+      overflow-wrap: break-word;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8));
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+    }
+    .ai-message::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--grad-3);
+      border-radius: 1rem 1rem 0 0;
+    }
+    .ai-message h1, .ai-message h2, .ai-message h3, .ai-message h4, .ai-message h5, .ai-message h6 { 
+      margin-top: 1.5rem; 
+      margin-bottom: 0.75rem; 
+      font-weight: 700; 
+      position: relative;
+    }
+    .ai-message h1 { 
+      font-size: 1.4rem; 
+      color: var(--text-primary);
+    }
+    .ai-message h2 { 
+      font-size: 1.2rem; 
+      color: var(--text-primary);
+    }
+    .ai-message h3 { 
+      font-size: 1.1rem; 
+      color: var(--text-secondary);
+    }
+    .ai-message p { margin-bottom: 0.75rem; line-height: 1.5; }
+    .ai-message ul, .ai-message ol { margin-bottom: 0.75rem; padding-left: 1.5rem; }
+    .ai-message li { margin-bottom: 0.25rem; }
+    .ai-message table { 
+      width: 100%; border-collapse: collapse; margin: 1rem 0; 
+      border: 1px solid var(--bs-border-color); border-radius: 0.375rem; overflow: hidden;
+    }
+    .ai-message th, .ai-message td { 
+      padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--bs-border-color); text-align: left; 
+    }
+    .ai-message th { 
+      background: var(--bs-light); font-weight: 600; color: var(--bs-dark); 
+    }
+    .ai-message tr:last-child td { border-bottom: none; }
+    .ai-message code { 
+      background: #f8f9fa; padding: 0.125rem 0.25rem; border-radius: 0.25rem; 
+      font-family: 'Monaco', 'Consolas', monospace; font-size: 0.875em; color: var(--text-secondary);
+    }
+    .ai-message pre { 
+      background: #f8f9fa; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; 
+      margin: 1rem 0; border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    .ai-message pre code { background: none; padding: 0; }
+    .ai-message blockquote { 
+      border-left: 3px solid rgba(99, 102, 241, 0.4); margin: 1rem 0; padding-left: 1rem; 
+      color: var(--text-secondary); font-style: italic; 
+    }
+    .ai-message strong { font-weight: 700; color: var(--text-primary); }
+    .ai-message em { font-style: italic; color: var(--text-secondary); }
+    
+    /* Enhanced Content Sections */
+    section {
+      margin-bottom: 2rem;
+    }
+    
+    /* Special styling for different content types */
+    .priorities-section .nm-card {
+      border-left: 3px solid var(--accent-orange);
+    }
+    .priorities-section .nm-card::before {
+      background: var(--grad-7);
+    }
+    
+    .diagnosis-section .nm-card {
+      border-left: 3px solid var(--accent-green);
+    }
+    .diagnosis-section .nm-card::before {
+      background: var(--grad-4);
+    }
+    
+    .management-section .nm-card {
+      border-left: 3px solid var(--accent-blue);
+    }
+    .management-section .nm-card::before {
+      background: var(--grad-1);
+    }
+    
+    .emergency-section .nm-card {
+      border-left: 3px solid var(--accent-pink);
+    }
+    .emergency-section .nm-card::before {
+      background: var(--grad-2);
+    }
+    
+    /* Enhanced navigation */
+    #pageNav {
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8)) !important;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.2) !important;
+      backdrop-filter: blur(8px);
+    }
+    
+    #pageNav .btn {
+      background: transparent;
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+    
+    #pageNav .btn:hover {
+      background: var(--grad-1);
+      color: var(--text-primary);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+    
+    /* Enhanced form styling */
+    .form-control {
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 0.5rem;
+    }
+    
+    .form-control:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.15);
+    }
+    
+    .btn-primary {
+      background: var(--grad-1);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--text-primary);
+      font-weight: 600;
+      border-radius: 0.5rem;
+    }
+    
+    .btn-primary:hover {
+      background: var(--grad-1);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+      color: var(--text-primary);
+    }
+    
+    .btn-outline-secondary {
+      border-color: rgba(99, 102, 241, 0.4);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+    
+    .btn-outline-secondary:hover {
+      background: var(--grad-1);
+      border-color: var(--accent-blue);
+      color: var(--text-primary);
+    }
+    
+    /* AI Chat Copy Button Styles */
+    .ai-message {
+    }
+    .ai-message:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    }
+    .copy-response-btn {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .copy-response-btn:hover {
+      background: rgba(255, 255, 255, 1);
+      border-color: rgba(0,0,0,0.2);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    }
+    .copy-response-btn i {
+      font-size: 11px;
+    }
+    
+    /* Search functionality styles */
+    .search-container {
+      position: relative;
+    }
+    
+    .search-highlight {
+      background-color: #fff3cd !important;
+      border: 1px solid #ffeaa7 !important;
+      border-radius: 2px;
+      padding: 1px 2px;
+    }
+    
+    .search-highlight.current {
+      background-color: #ffc107 !important;
+      border-color: #ffb300 !important;
+      font-weight: bold;
+    }
+    
+    
+    /* Floating Scroll to Top Button */
+    .scroll-to-top-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .scroll-to-top-btn:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .search-info {
+      white-space: nowrap;
+      min-width: 60px;
+    }
+    
+    /* Hide search in print */
+    @media print {
+      .search-container {
+        display: none !important;
+      }
+      .search-highlight {
+        background-color: transparent !important;
+        border: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header-gradient position-sticky top-0 print-hide">
+    <div class="container py-2 d-flex align-items-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <i class="bi bi-diagram-3 fs-4 text-primary"></i>
+        <div>
+          <div class="fw-bold">Nephromap! [TOPIC] Viva</div>
+          <small class="text-secondary">Consultant-level viva guide &#8226; SCFHS</small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <!-- Export Dropdown -->
+        <div class="btn-group">
+          <button class="btn btn-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Export Options">
+            <i class="bi bi-download me-1"></i>Export
+          </button>
+          <ul class="dropdown-menu">
+            <li><h6 class="dropdown-header"><i class="bi bi-file-arrow-down me-2"></i>Export Formats</h6></li>
+            <li><a class="dropdown-item" href="#" id="exportVivaHTML"><i class="bi bi-file-earmark-text me-2"></i>HTML File</a></li>
+            <li><a class="dropdown-item" href="#" id="exportVivaPDF"><i class="bi bi-file-earmark-pdf me-2"></i>PDF Document</a></li>
+            <li><a class="dropdown-item" href="#" id="exportVivaImage"><i class="bi bi-image me-2"></i>PNG Image</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" id="exportVivaPrint"><i class="bi bi-printer me-2"></i>Print Preview</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Navigation moved to sidebar -->
+
+  <main class="container py-4 pb-3">
+
+    <!-- Floating Scroll to Top Button -->
+    <button id="scrollToTop" class="btn btn-outline-secondary btn-sm scroll-to-top-btn">â†‘ Top</button>
+
+    <!-- Topic Header Section -->
+    <section id="topic-header" class="nm-card p-4 p-md-5 mb-4 tone-primary avoid-break text-center">
+      <div class="topic-title mb-3">
+        <h1 class="display-5 fw-bold text-primary mb-0">[TOPIC]</h1>
+      </div>
+      <div class="topic-author">
+        <p class="lead mb-0 text-secondary">
+          <i class="bi bi-person-circle me-2"></i>
+          Prepared by: <strong>Dr. Hossam Abohassan</strong>
+          <span class="text-muted mx-2">â€¢</span>
+          <i class="bi bi-heart-pulse me-1"></i>
+          <span class="text-muted">nephromap.com</span>
+        </p>
+      </div>
+    </section>
+
+    <section id="overview" class="nm-card p-3 p-md-4 mb-3 tone-light avoid-break">
+      <div class="mb-2">
+        <span class="chip bg-primary-subtle text-primary-emphasis me-1">[CHIP_1]</span>
+        <span class="chip bg-success-subtle text-success-emphasis me-1">[CHIP_2]</span>
+        <span class="chip bg-warning-subtle text-warning-emphasis">[CHIP_3]</span>
+      </div>
+      <div class="small text-secondary">[OPENING_PARAGRAPH_HTML_SAFE]</div>
+    </section>
+
+    <section id="priorities" class="priorities-section nm-card p-3 p-md-4 mb-3 tone-warning avoid-break safety-info">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-lightning-charge-fill"></i></span><span>Immediate Priorities (first 5 minutes)</span></div>
+      <ul class="mb-0">[IMMEDIATE_PRIORITIES_LI]</ul>
+    </section>
+
+    <section id="diagnosis" class="diagnosis-section nm-card p-3 p-md-4 mb-3 tone-success avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-diagram-3"></i></span><span>Differential Diagnosis &amp; Etiology</span></div>
+      <div class="row g-3">
+        <div class="col-md-4"><div class="border rounded p-3 h-100"><div class="fw-semibold mb-2">[DDX_BUCKET_1_TITLE]</div><ul class="mb-0">[DDX_BUCKET_1_ITEMS_LI]</ul></div></div>
+        <div class="col-md-4"><div class="border rounded p-3 h-100"><div class="fw-semibold mb-2">[DDX_BUCKET_2_TITLE]</div><ul class="mb-0">[DDX_BUCKET_2_ITEMS_LI]</ul></div></div>
+        <div class="col-md-4"><div class="border rounded p-3 h-100"><div class="fw-semibold mb-2">[DDX_BUCKET_3_TITLE]</div><ul class="mb-0">[DDX_BUCKET_3_ITEMS_LI]</ul></div></div>
+      </div>
+      <div class="differential-focus mt-3" data-optional-block>
+        [DIFFERENTIAL_FOCUS_HTML]
+      </div>
+    </section>
+
+    <section id="quick-reference" class="nm-card p-3 p-md-4 mb-3 tone-light avoid-break" data-optional-section>
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-card-checklist text-success"></i></span><span>Quick Reference Card</span></div>
+      <div class="quick-ref-content" data-optional-content>
+        [QUICK_REF_CARD_HTML]
+      </div>
+    </section>
+
+    <section id="investigations" class="nm-card p-3 p-md-4 mb-3 tone-success avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-search text-success"></i></span><span>Focused Investigations</span></div>
+      <ul class="mb-0">[INVESTIGATIONS_LI]</ul>
+    </section>
+
+    <section id="emergency" class="emergency-section nm-card p-3 p-md-4 mb-3 tone-emphasis avoid-break safety-warning">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="section-title"><span class="icon-circle"><i class="bi bi-exclamation-triangle-fill"></i></span><span>Emergency Algorithm</span></div>
+        <div class="btn-group btn-group-sm print-hide">
+          <button class="btn btn-outline-secondary" onclick="toggleAccordion('emergencyAccordion', true)">Expand all</button>
+          <button class="btn btn-outline-secondary" onclick="toggleAccordion('emergencyAccordion', false)">Collapse all</button>
+        </div>
+      </div>
+      <div class="accordion" id="emergencyAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#emergencyContent" aria-expanded="true" aria-controls="emergencyContent">
+              Emergency Algorithm Steps
+            </button>
+          </h2>
+          <div id="emergencyContent" class="accordion-collapse collapse show" data-bs-parent="#emergencyAccordion">
+            <div class="accordion-body">
+              <div class="ascii-flow wrap">[EMERGENCY_ALGORITHM_HTML]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="management" class="management-section nm-card p-3 p-md-4 mb-3 tone-primary avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-list-check"></i></span><span>Management Ladder â€” [TOPIC]</span></div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="border rounded p-3 h-100">
+            <div class="fw-semibold mb-2">[PILLAR_1]</div>
+            <div class="fw-semibold">[STEP_1_TITLE]</div>
+            <ul class="mb-3">[STEP_1_LI]</ul>
+            <div class="fw-semibold">[STEP_2_TITLE]</div>
+            <ul class="mb-0">[STEP_2_LI]</ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="border rounded p-3 h-100">
+            <div class="fw-semibold mb-2">[PILLAR_2]</div>
+            <div class="fw-semibold">[STEP_3_TITLE]</div>
+            <ul class="mb-3">[STEP_3_LI]</ul>
+            <div class="fw-semibold">[STEP_4_TITLE]</div>
+            <ul class="mb-0">[STEP_4_LI]</ul>
+          </div>
+        </div>
+      </div>
+      <div class="small text-secondary mt-2">Reassessment cadence and escalation criteria per KDIGO/local.</div>
+    </section>
+
+    <section id="pharmacology" class="nm-card p-3 p-md-4 mb-3 tone-light avoid-break" data-optional-section>
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-capsule-pill text-danger"></i></span><span>Therapeutics &amp; Pharmacology</span></div>
+      <div class="table-responsive" data-optional-content>
+        [PHARMACOLOGY_TABLE_HTML]
+      </div>
+    </section>
+
+
+    <section id="topic-blocks" class="nm-card p-3 p-md-4 mb-3 tone-light avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-grid-3x3-gap-fill text-info"></i></span><span>Topic-Specific Blocks</span></div>
+      <div class="row g-3">
+        <div class="col-md-4"><div class="border rounded p-3 h-100"><div class="fw-semibold mb-2">[TOPIC_BLOCK_A_TITLE]</div><ul class="mb-0">[TOPIC_BLOCK_A_ITEMS_LI]</ul></div></div>
+        <div class="col-md-4"><div class="border rounded p-3 h-100"><div class="fw-semibold mb-2">[TOPIC_BLOCK_B_TITLE]</div><ul class="mb-0">[TOPIC_BLOCK_B_ITEMS_LI]</ul></div></div>
+        <div class="col-md-4"><div class="border rounded p-3 h-100"><div class="fw-semibold mb-2">[TOPIC_BLOCK_C_TITLE]</div><ul class="mb-0">[TOPIC_BLOCK_C_ITEMS_LI]</ul></div></div>
+      </div>
+    </section>
+
+    <section id="quality-metrics" class="nm-card p-3 p-md-4 mb-3 avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-graph-up-arrow text-success"></i></span><span>Quality Metrics &amp; Audit Points</span></div>
+      <div class="row g-3">
+        <div class="col-md-4"><div class="border rounded p-3 h-100"><div class="fw-semibold">Process</div><ul class="mb-0">[QUALITY_PROCESS_LI]</ul></div></div>
+        <div class="col-md-4"><div class="border rounded p-3 h-100"><div class="fw-semibold">Outcome</div><ul class="mb-0">[QUALITY_OUTCOME_LI]</ul></div></div>
+        <div class="col-md-4"><div class="border rounded p-3 h-100"><div class="fw-semibold">Safety</div><ul class="mb-0">[QUALITY_SAFETY_LI]</ul></div></div>
+      </div>
+    </section>
+
+    <section id="safety-leadership" class="nm-card p-3 p-md-4 mb-3 tone-info avoid-break" data-optional-section>
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-shield-check text-info"></i></span><span>Systems, Safety, Leadership</span></div>
+      <div class="row g-3">
+        <div class="col-md-6" data-optional-section>
+          <div class="border rounded p-3 h-100 bg-white shadow-sm">
+            <div class="fw-semibold mb-2 text-info">Safety Criticals</div>
+            <ul class="mb-0 safety-list" data-optional-content>
+              [SAFETY_LIST_HTML]
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6" data-optional-section>
+          <div class="border rounded p-3 h-100 bg-white shadow-sm">
+            <div class="fw-semibold mb-2 text-primary">Communication Pearls</div>
+            <ul class="mb-0 communication-list" data-optional-content>
+              [COMMUNICATION_LIST_HTML]
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="cases" class="nm-card p-3 p-md-4 mb-3 avoid-break">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="section-title"><span class="icon-circle"><i class="bi bi-collection text-primary"></i></span><span>Case Scenarios (progressive disclosure)</span></div>
+        <div class="btn-group btn-group-sm print-hide">
+          <button class="btn btn-outline-secondary" onclick="toggleAccordion('cases', true)">Expand all</button>
+          <button class="btn btn-outline-secondary" onclick="toggleAccordion('cases', false)">Collapse all</button>
+        </div>
+      </div>
+      <div class="accordion" id="casesAccordion">[CASE_SCENARIOS_HTML]</div>
+    </section>
+
+    <section id="viva" class="nm-card p-3 p-md-4 mb-3 avoid-break">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="section-title"><span class="icon-circle"><i class="bi bi-chat-dots-fill text-secondary"></i></span><span>Mock Viva Bank</span></div>
+        <div class="btn-group btn-group-sm print-hide">
+          <button class="btn btn-outline-secondary" onclick="toggleAccordion('vivaAccordion', true)">Expand all</button>
+          <button class="btn btn-outline-secondary" onclick="toggleAccordion('vivaAccordion', false)">Collapse all</button>
+        </div>
+      </div>
+      <div class="accordion" id="vivaAccordion">[VIVA_ITEMS]</div>
+    </section>
+
+    <!-- Overflow Structure -->
+    <section id="additional-resources" class="mt-4">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="section-title">
+          <span class="icon-circle">
+            <i class="bi bi-archive text-warning"></i>
+          </span>
+          <span>Additional Resources & Extensions</span>
+        </div>
+        <div class="btn-group btn-group-sm print-hide">
+          <button class="btn btn-outline-secondary" onclick="toggleAccordion('extraInfoAccordion', true)">Expand all</button>
+          <button class="btn btn-outline-secondary" onclick="toggleAccordion('extraInfoAccordion', false)">Collapse all</button>
+        </div>
+      </div>
+      [EXTRA_INFO_HTML]
+    </section>
+
+    <section id="pitfalls" class="nm-card p-3 p-md-4 mb-3 avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-exclamation-octagon-fill text-danger"></i></span><span>Common Pitfalls</span></div>
+      <ul class="mb-0">[PITFALLS_LI]</ul>
+    </section>
+
+    <section id="teaching-points" class="nm-card p-3 p-md-4 mb-3 tone-light avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-mortarboard-fill text-primary"></i></span><span>Teaching Points (for juniors)</span></div>
+      <div class="row g-3">
+        <div class="col-md-6"><div class="border rounded p-3 h-100"><div class="fw-semibold mb-2">Key concepts</div><ul class="mb-0">[TEACHING_CONCEPTS_LI]</ul></div></div>
+        <div class="col-md-6"><div class="border rounded p-3 h-100"><div class="fw-semibold mb-2">Common mistakes</div><ul class="mb-0">[TEACHING_MISTAKES_LI]</ul></div></div>
+      </div>
+    </section>
+
+    <section id="answer-structure" class="nm-card p-3 p-md-4 mb-3 avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-card-text text-secondary"></i></span><span>Answer Structure Card (8 steps)</span></div>
+      <ol class="mb-0">[ANSWER_STEPS_OL]</ol>
+    </section>
+
+    <section id="concept-diagram" class="nm-card p-3 p-md-4 mb-3 tone-light avoid-break" data-optional-section>
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-diagram-3 text-primary"></i></span><span>Concept Diagram &amp; Visuals</span></div>
+      <div class="concept-diagram" data-optional-content>
+        [CONCEPT_DIAGRAM_HTML]
+      </div>
+    </section>
+
+
+    <section id="flowchart" class="nm-card p-3 p-md-4 mb-3 avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-diagram-3-fill text-info"></i></span><span>ASCII Flowchart</span></div>
+      <div class="ascii-flow no-wrap">[ASCII_FLOWCHART_PRE]</div>
+    </section>
+
+    <section id="evidence" class="nm-card p-3 p-md-4 mb-3 tone-light avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-journal-text text-primary"></i></span><span>Evidence Summary &amp; Key Studies</span></div>
+      <ul class="mb-2">[EVIDENCE_STUDIES_LI]</ul>
+      <ul class="mb-0">[EVIDENCE_RECOMMENDATIONS_LI]</ul>
+    </section>
+
+    <section id="guidelines" class="nm-card p-3 p-md-4 mb-3 avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-bookmarks-fill text-warning"></i></span><span>Guideline Anchors</span></div>
+      <ul class="mb-0">[GUIDELINE_ANCHORS_LI]</ul>
+    </section>
+
+    <!-- Additional content injected by AI assistant or user edits -->
+    <section id="additional" class="nm-card p-3 p-md-4 mb-3 tone-light avoid-break">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-stars text-primary"></i></span><span>Additional Sections</span></div>
+      <div id="additionalContent">[ADDITIONAL_SECTIONS_HTML]</div>
+    </section>
+
+    <section id="aiChat" class="nm-card p-3 p-md-4 mb-3 tone-info avoid-break print-hide">
+      <div class="section-title mb-2"><span class="icon-circle"><i class="bi bi-robot text-info"></i></span><span>AI Chat Assistant â€” Interactive Support</span></div>
+      <div class="border rounded p-3">
+        <div id="aiChatApp" class="ai-chat small">
+          <div class='border rounded p-2 mb-2 bg-white'>
+            <div id='aiStatus' class='small'></div>
+          </div>
+          <div id='aiLogWrap' class='border rounded p-2'>
+            <div id='aiLog' class='d-flex flex-column gap-2'></div>
+          </div>
+          <div class='input-group input-group-sm mt-2'>
+            <input id='aiInput' class='form-control' placeholder='Ask about this topic...'/>
+            <button id='aiSend' class='btn btn-primary' type='button'>Send</button>
+            <button id='aiClear' class='btn btn-outline-secondary' type='button'>Clear</button>
+          </div>
+          <div class='form-text mt-1'>Configured in template. For privacy, avoid embedding production tokens in public exports.</div>
+        </div>
+      </div>
+    </section>
+
+
+
+  </main>
+
+  <script>
+    console.log('Template script starting...');
+    console.log('Document ready state:', document.readyState);
+    console.log('Window loaded:', typeof window !== 'undefined');
+    
+
+    // Configure DeepSeek AI API here (edit this file)
+    // Get your API key from: https://platform.deepseek.com
+    const DEEPSEEK_BASE = 'https://api.deepseek.com/v1';
+    const DEEPSEEK_MODEL = 'deepseek-chat';
+    const DEEPSEEK_TOKEN = 'sk-d8774fcd926c4bcc8d4b88d67fd68f74'; // Add your DeepSeek API key here
+    const searchInput = document.getElementById('searchInput');
+    function clearHighlights(){ document.querySelectorAll('mark.search-highlight').forEach(m=>{ const p=m.parentNode; p.replaceChild(document.createTextNode(m.textContent), m); p.normalize(); }); }
+    function doSearch(q){ clearHighlights(); if(!q) return; const walker=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode:(n)=>{ if(!n.parentElement||['SCRIPT','STYLE','INPUT','TEXTAREA'].includes(n.parentElement.tagName)) return NodeFilter.FILTER_REJECT; const t=n.nodeValue.trim(); return t&&t.toLowerCase().includes(q.toLowerCase())?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP; } }); const matches=[]; while(walker.nextNode()) matches.push(walker.currentNode); matches.forEach(n=>{ const span=document.createElement('span'); const idx=n.nodeValue.toLowerCase().indexOf(q.toLowerCase()); const before=n.nodeValue.slice(0,idx); const mid=n.nodeValue.slice(idx, idx+q.length); const after=n.nodeValue.slice(idx+q.length); span.innerHTML=`${before}<mark class="search-highlight">${mid}</mark>${after}`; n.parentNode.replaceChild(span,n); }); }
+    if (searchInput) { searchInput.addEventListener('input',(e)=>{ const q=e.target.value.trim(); doSearch(q); }); }
+    window.addEventListener('keydown',(e)=>{ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){ e.preventDefault(); if(searchInput){ searchInput.focus(); searchInput.select(); } }});
+    function toggleAccordion(id, expand){
+      const root = document.getElementById(id);
+      if (!root) return;
+      root.querySelectorAll('.accordion-collapse').forEach(el=>{
+        if (expand) el.classList.add('show'); else el.classList.remove('show');
+      });
+      root.querySelectorAll('.accordion-button').forEach(btn=>{
+        if (expand) btn.classList.remove('collapsed'); else btn.classList.add('collapsed');
+        btn.setAttribute('aria-expanded', expand ? 'true' : 'false');
+      });
+    }
+
+    // Readability enhancements: bold leading labels ending with ':' and accent key comparators
+    function enhanceReadability(){
+      const scope = document.querySelector('main');
+      if (!scope) return;
+      const targets = scope.querySelectorAll('li, p, td');
+      targets.forEach(el => {
+        // Bold leading label before the first colon
+        const html = el.innerHTML;
+        if (!html) return;
+        // Only if text starts immediately (avoid when starts with tag)
+        if (!/^\s*[<]/.test(html)){
+          el.innerHTML = html.replace(/^(\s*)([^:<]{1,60}?):\s+/, (m, s, label) => `${s}<strong class="label-strong">${label}:</strong> `);
+        } else {
+          // If starts with a tag, try to find first text node child
+          const firstChild = el.firstChild;
+          if (firstChild && firstChild.nodeType === Node.TEXT_NODE){
+            const txt = firstChild.nodeValue;
+            const m = txt.match(/^(\s*)([^:<]{1,60}?):\s+/);
+            if (m){
+              const rest = txt.slice(m[0].length);
+              const strong = document.createElement('strong');
+              strong.className = 'label-strong';
+              strong.textContent = m[2] + ':';
+              const prefix = document.createTextNode(m[1] || '');
+              el.insertBefore(prefix, firstChild);
+              el.insertBefore(strong, firstChild);
+              firstChild.nodeValue = ' ' + rest;
+            }
+          }
+        }
+        // Accent comparators â‰¤ â‰¥ < >
+        Array.from(el.childNodes).forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE){
+            const frag = document.createElement('span');
+            const parts = node.nodeValue.split(/(â‰¤|â‰¥|<|>)/);
+            if (parts.length > 1){
+              parts.forEach(part =>{
+                if (/^(â‰¤|â‰¥|<|>)$/.test(part)){
+                  const b = document.createElement('span');
+                  b.className = 'accent';
+                  b.textContent = part;
+                  frag.appendChild(b);
+                } else {
+                  frag.appendChild(document.createTextNode(part));
+                }
+              });
+              el.replaceChild(frag, node);
+            }
+          }
+        });
+      });
+    }
+    document.addEventListener('DOMContentLoaded', enhanceReadability);
+
+    // Auto-convert Emergency Algorithm content to accordions when it contains <strong> tags
+    function convertEmergencyToAccordions() {
+      const emergencyContent = document.getElementById('emergencyContent');
+      if (!emergencyContent) return;
+      
+      const content = emergencyContent.innerHTML;
+      
+      // Check if content contains <strong> tags that could be accordion headers
+      const strongPattern = /<strong[^>]*>([^<]+)<\/strong>/g;
+      const strongMatches = [...content.matchAll(strongPattern)];
+      
+      // If we have multiple <strong> tags, convert to accordions
+      if (strongMatches.length > 1) {
+        console.log('Converting Emergency Algorithm to accordions...');
+        
+        // Clear the existing content and replace with new accordion structure
+        emergencyContent.innerHTML = '';
+        
+        // Process each <li> element that contains <strong> tags
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        
+        const listItems = tempDiv.querySelectorAll('li');
+        let accordionCount = 0;
+        
+        listItems.forEach((li, index) => {
+          const strongElement = li.querySelector('strong');
+          if (strongElement) {
+            // Extract the header text (remove the <strong> tags)
+            const headerText = strongElement.textContent;
+            
+            // Get the content after the <strong> tag
+            const contentAfterStrong = li.innerHTML.replace(/<strong[^>]*>.*?<\/strong>/, '').trim();
+            
+            if (contentAfterStrong) {
+              const accordionId = `emergencyAccordion${accordionCount}`;
+              accordionCount++;
+              
+              const accordionItem = document.createElement('div');
+              accordionItem.className = 'accordion-item';
+              accordionItem.innerHTML = `
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${accordionId}" aria-expanded="false" aria-controls="${accordionId}">
+                    ${headerText}
+                  </button>
+                </h2>
+                <div id="${accordionId}" class="accordion-collapse collapse" data-bs-parent="#emergencyAccordion">
+                  <div class="accordion-body">
+                    ${contentAfterStrong}
+                  </div>
+                </div>
+              `;
+              
+              emergencyContent.appendChild(accordionItem);
+            }
+          } else {
+            // If no <strong> tag, just add the content as-is
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = li.innerHTML;
+            emergencyContent.appendChild(contentDiv);
+          }
+        });
+        
+        // Update the toggle buttons to work with the new structure
+        const expandBtn = document.querySelector('button[onclick*="emergencyAccordion"][onclick*="true"]');
+        const collapseBtn = document.querySelector('button[onclick*="emergencyAccordion"][onclick*="false"]');
+        
+        if (expandBtn) {
+          expandBtn.onclick = () => toggleAccordion('emergencyAccordion', true);
+        }
+        if (collapseBtn) {
+          collapseBtn.onclick = () => toggleAccordion('emergencyAccordion', false);
+        }
+        
+        console.log(`Created ${accordionCount} accordion items for Emergency Algorithm`);
+      }
+    }
+    
+    // Run the conversion when DOM is loaded
+    document.addEventListener('DOMContentLoaded', convertEmergencyToAccordions);
+
+    // Lightweight AI chat â€” DeepSeek AI API (browser)
+    (function initAiChat(){
+      console.log('AI Chat initialization starting...');
+      console.log('Document ready state in AI Chat:', document.readyState);
+
+      console.log('AI Chat initialization started');
+      const root = document.getElementById('aiChatApp');
+      console.log('AI Chat root element:', root);
+      if (!root) {
+        console.log('AI Chat root element not found, returning');
+        return;
+      }
+      const statusEl = document.getElementById('aiStatus');
+      const logEl = document.getElementById('aiLog');
+      const inputEl = document.getElementById('aiInput');
+      const sendBtn = document.getElementById('aiSend');
+      const clearBtn = document.getElementById('aiClear');
+
+      console.log('AI Chat elements found:');
+      console.log('- statusEl:', statusEl);
+      console.log('- logEl:', logEl);
+      console.log('- inputEl:', inputEl);
+      console.log('- sendBtn:', sendBtn);
+      console.log('- clearBtn:', clearBtn);
+
+      if (statusEl) statusEl.innerHTML = `Base: <code>${DEEPSEEK_BASE}</code> â€¢ Model: <code>${DEEPSEEK_MODEL}</code> â€¢ Token: <code>${DEEPSEEK_TOKEN ? 'set' : 'not set'}</code> (edit in template)`;
+      if (!logEl || !inputEl || !sendBtn || !clearBtn){
+        console.log('AI Chat UI init failed: controls missing');
+        if (statusEl) statusEl.textContent += ' â€¢ UI init failed: controls missing';
+        return;
+      }
+
+      // Test API connection on load
+      async function testConnection(){
+        if (!DEEPSEEK_TOKEN) return;
+        try {
+          const testRes = await fetch(DEEPSEEK_BASE.replace(/\/$/, '') + '/models', {
+            headers: { 'Authorization': 'Bearer ' + DEEPSEEK_TOKEN }
+          });
+          if (testRes.ok) {
+            console.log('API connection test: OK');
+          } else {
+            console.log('API connection test failed:', testRes.status);
+            if (statusEl) statusEl.innerHTML += ' â€¢ <span style="color:orange">API test failed</span>';
+          }
+        } catch(e) {
+          console.log('API connection test error:', e);
+          if (statusEl) statusEl.innerHTML += ' â€¢ <span style="color:red">Connection error</span>';
+        }
+      }
+      testConnection();
+
+      const messages = [
+        { role:'system', content:`You are a nephrology viva coach. Provide comprehensive, well-formatted answers using markdown. Use tables, bullet points, and headings for clarity. Include specific thresholds, diagnostic criteria, and clinical values. Topic: ${document.title.replace('Nephromap! â€” ','').replace(' Viva','')}.` }
+      ];
+      function append(role, text){
+        const d = document.createElement('div');
+        d.className = role==='user' ? 'p-2 rounded bg-primary-subtle' : 'p-2 rounded bg-light ai-message';
+        
+        if (role === 'assistant') {
+          // Make assistant messages relative positioned for copy button
+          d.style.position = 'relative';
+          
+          // Store original text for copying
+          d.setAttribute('data-original-text', text);
+          
+          // Add copy button for assistant messages
+          const copyBtn = document.createElement('button');
+          copyBtn.className = 'btn btn-outline-secondary btn-sm copy-response-btn';
+          copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+          copyBtn.title = 'Copy response';
+          copyBtn.style.cssText = `
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+            z-index: 10;
+          `;
+          
+          copyBtn.addEventListener('click', async () => {
+            try {
+              // Get the rendered HTML content (for pasting into the WYSIWYG editor)
+              const renderedHTML = d.innerHTML.replace(copyBtn.outerHTML, '').trim();
+              
+              // Use clipboard API to write both HTML and plain text
+              if (navigator.clipboard && navigator.clipboard.write) {
+                await navigator.clipboard.write([
+                  new ClipboardItem({
+                    'text/html': new Blob([renderedHTML], { type: 'text/html' }),
+                    'text/plain': new Blob([text], { type: 'text/plain' })
+                  })
+                ]);
+              } else {
+                // Fallback to plain text if rich clipboard isn't supported
+                await navigator.clipboard.writeText(renderedHTML);
+              }
+              
+              copyBtn.innerHTML = '<i class="bi bi-check"></i>';
+              copyBtn.classList.remove('btn-outline-secondary');
+              copyBtn.classList.add('btn-success');
+              copyBtn.title = 'Copied formatted content!';
+              setTimeout(() => {
+                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                copyBtn.classList.remove('btn-success');
+                copyBtn.classList.add('btn-outline-secondary');
+                copyBtn.title = 'Copy response';
+              }, 1500);
+            } catch (err) {
+              console.error('Failed to copy formatted content: ', err);
+              // Fallback for older browsers - copy as HTML in a textarea
+              const textArea = document.createElement('textarea');
+              const renderedHTML = d.innerHTML.replace(copyBtn.outerHTML, '').trim();
+              textArea.value = renderedHTML;
+              document.body.appendChild(textArea);
+              textArea.select();
+              document.execCommand('copy');
+              document.body.removeChild(textArea);
+              
+              copyBtn.innerHTML = '<i class="bi bi-check"></i>';
+              copyBtn.classList.remove('btn-outline-secondary');
+              copyBtn.classList.add('btn-success');
+              copyBtn.title = 'Copied as HTML!';
+              setTimeout(() => {
+                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                copyBtn.classList.remove('btn-success');
+                copyBtn.classList.add('btn-outline-secondary');
+                copyBtn.title = 'Copy response';
+              }, 1500);
+            }
+          });
+          
+          // Show copy button on hover
+          d.addEventListener('mouseenter', () => {
+            copyBtn.style.opacity = '1';
+          });
+          d.addEventListener('mouseleave', () => {
+            copyBtn.style.opacity = '0.7';
+          });
+          
+          if (typeof marked !== 'undefined') {
+            // Render markdown for assistant messages
+            try {
+              d.innerHTML = marked.parse(text);
+            } catch(e) {
+              console.log('Markdown parsing failed:', e);
+              d.innerText = text;
+            }
+          } else {
+            d.innerText = text;
+          }
+          
+          // Insert button to add response into page and request save
+          const insertBtn = document.createElement('button');
+          insertBtn.className = 'btn btn-outline-primary btn-sm copy-response-btn';
+          insertBtn.innerHTML = '<i class="bi bi-plus-square"></i>';
+          insertBtn.title = 'Insert into page and save JSON';
+          insertBtn.style.cssText = `
+            position: absolute;
+            top: 8px;
+            right: 44px;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            opacity: 0.85;
+            transition: opacity 0.2s ease;
+            z-index: 10;
+          `;
+          insertBtn.addEventListener('click', async () => {
+            try {
+              const container = document.getElementById('additionalContent');
+              const renderedHTML = d.innerHTML
+                .replace(copyBtn.outerHTML, '')
+                .replace(insertBtn.outerHTML, '')
+                .trim();
+              const block = document.createElement('div');
+              block.className = 'border rounded p-3 mb-2 bg-white';
+              block.innerHTML = renderedHTML;
+              if (container) container.appendChild(block);
+
+              // Notify parent renderer (if open) to persist into JSON
+              try {
+                const msg = { type: 'NM_INSERT_ADDITIONAL_SECTION', html: block.outerHTML };
+                if (window.parent) window.parent.postMessage(msg, '*');
+              } catch(e){ /* ignore cross-origin */ }
+
+              insertBtn.innerHTML = '<i class="bi bi-check-square"></i>';
+              insertBtn.classList.remove('btn-outline-primary');
+              insertBtn.classList.add('btn-success');
+              insertBtn.title = 'Inserted! Saved if connected to project.';
+              setTimeout(() => {
+                insertBtn.innerHTML = '<i class="bi bi-plus-square"></i>';
+                insertBtn.classList.remove('btn-success');
+                insertBtn.classList.add('btn-outline-primary');
+                insertBtn.title = 'Insert into page and save JSON';
+              }, 1500);
+            } catch(err){ console.error('Insert failed:', err); }
+          });
+
+          // Append action buttons
+          d.appendChild(insertBtn);
+          d.appendChild(copyBtn);
+        } else {
+          d.innerText = text;
+        }
+        
+        logEl.appendChild(d); 
+        logEl.scrollTop = logEl.scrollHeight;
+        return d;
+      }
+      function getContextText(){
+        // Extract visible text from key sections; trim to ~4000 chars
+        const sel = [
+          'header .fw-bold',
+          'section .fw-semibold',
+          'section ul',
+          'section .ascii-flow'
+        ];
+        const texts = [];
+        sel.forEach(s=> document.querySelectorAll(s).forEach(el=>{ texts.push(el.innerText.trim()); }));
+        let ctx = texts.join('\n\n');
+        if (ctx.length > 4000) ctx = ctx.slice(0, 4000) + '\n...';
+        return ctx;
+      }
+      async function send(retryCount = 0){
+        console.log('Send function called with retryCount:', retryCount);
+        const q = inputEl.value.trim();
+        console.log('Input value:', JSON.stringify(q));
+        if(!q) {
+          console.log('Input is empty, returning');
+          return;
+        }
+        append('user', q); inputEl.value='';
+        const model = DEEPSEEK_MODEL; const key = DEEPSEEK_TOKEN; const base = DEEPSEEK_BASE.replace(/\/$/, '');
+                  if (!model || !key){ append('assistant', 'DeepSeek model/token not set. Edit in template.'); return; }
+        try{
+          sendBtn.disabled = true;
+          const statusMsg = append('assistant', 'Contacting model...');
+          const system = `You are a nephrology viva coach specializing in making complex medical concepts easy to study and remember. Your primary goal is to help students prepare for nephrology viva exams by providing answers that are:
+
+**STUDY-FRIENDLY FORMAT:**
+1. **Clear Structure**: Always start with a brief overview, then break down into digestible sections
+2. **Visual Learning**: Use tables, charts, and diagrams whenever possible
+3. **Memory Aids**: Include mnemonics, acronyms, and memory tricks
+4. **Clinical Relevance**: Connect everything to real clinical scenarios
+5. **Viva Focus**: Structure answers as you would explain them in a viva exam
+
+**REQUIRED ELEMENTS IN EVERY ANSWER:**
+- **ðŸ“Š Tables**: For classifications, criteria, drug dosing, lab values
+- **ðŸŽ¯ Mnemonics**: Create memorable acronyms for lists and processes
+- **ðŸ“ˆ Charts/Diagrams**: Use ASCII art or structured text for flowcharts
+- **ðŸ’¡ Key Points**: Highlight the most important facts to remember
+- **ðŸ¥ Clinical Pearls**: Include practical tips and common pitfalls
+- **ðŸ”— Topic Connection**: Always relate back to the current topic: ${document.title.replace('Nephromap! â€” ','').replace(' Viva','')}
+
+**FORMATTING GUIDELINES:**
+- Use markdown tables for structured data
+- Create ASCII flowcharts using characters like: â”Œâ”€â” â”œâ”€â”¤ â””â”€â”˜ â”‚
+- Use emojis and symbols to make content memorable
+- Include "Viva Tips" sections with examiner's likely questions
+- Add "Memory Hooks" for difficult concepts
+- Use color-coding suggestions (ðŸ”´ Red for critical, ðŸŸ¡ Yellow for important, ðŸŸ¢ Green for normal)
+
+**EXAMPLE STRUCTURE:**
+1. **Quick Overview** (2-3 sentences)
+2. **ðŸ“Š Classification Table** (if applicable)
+3. **ðŸŽ¯ Key Mnemonics** (memory aids)
+4. **ðŸ“ˆ Step-by-Step Process** (flowchart or numbered list)
+5. **ðŸ’¡ Clinical Pearls** (practical tips)
+6. **ðŸ¥ Viva Tips** (common exam questions)
+7. **ðŸ”— Connection to [Current Topic]**
+
+**SPECIAL INSTRUCTIONS:**
+- Keep explanations concise but comprehensive
+- Use analogies and real-world examples
+- Include normal ranges and critical values
+- Mention common mistakes and how to avoid them
+- Always end with a summary of key takeaway points
+
+Remember: Your goal is to make complex nephrology concepts stick in the student's memory through clear structure, visual aids, and memorable mnemonics.`;
+          const context = getContextText();
+          
+          console.log('Sending request to:', base + '/chat/completions');
+          console.log('Model:', model);
+          console.log('Request body:', JSON.stringify({
+            model,
+            stream: false,
+            messages: [
+              { role:'system', content: system + `\nContext:\n` + context },
+              { role:'user', content: q }
+            ],
+            max_tokens: 2048,
+            temperature: 0.1
+          }, null, 2));
+          
+          // Use non-streaming response
+          let res = await fetch(base + '/chat/completions', {
+            method: 'POST',
+            headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
+            body: JSON.stringify({
+              model,
+              stream: false,
+              messages: [
+                { role:'system', content: system + `\nContext:\n` + context },
+                { role:'user', content: q }
+              ],
+              max_tokens: 2048,
+              temperature: 0.1
+            })
+          });
+          
+          // Remove the "Contacting model..." message
+          try {
+            if (statusMsg && statusMsg.parentNode === logEl) {
+              logEl.removeChild(statusMsg);
+            }
+          } catch(e) {
+            console.log('Could not remove status message:', e);
+          }
+          
+          console.log('Response status:', res.status);
+          console.log('Response headers:', res.headers);
+          console.log('Content-Type:', res.headers.get('content-type'));
+          console.log('Transfer-Encoding:', res.headers.get('transfer-encoding'));
+          
+          if(!res.ok){
+            let errorMsg = '';
+            try{ 
+              const errorText = await res.text(); 
+              errorMsg = errorText;
+              console.log('Error response:', errorText);
+            }catch(e){ console.log('Failed to read error:', e); }
+            
+            // Retry once on 429 or 503 errors
+            if ((res.status === 429 || res.status === 503) && retryCount === 0) {
+              console.log('Retrying request...');
+              setTimeout(() => send(1), 2000);
+              return;
+            }
+            
+            append('assistant', `Error ${res.status}: ${res.statusText}${errorMsg ? '\nDetails: ' + errorMsg.slice(0, 200) : ''}`);
+            return;
+          }
+          
+          // Handle non-streaming response
+          console.log('Processing non-streaming response...');
+          
+          const responseData = await res.json();
+          console.log('Response data:', responseData);
+          console.log('Choices array:', responseData.choices);
+                               // Try to get the message from the correct structure
+          const choice = responseData.choices && responseData.choices[0];
+          const choiceObj = choice && (choice['0'] || choice[0] || choice);
+          const message = choiceObj && choiceObj.message;
+          
+          if (message && message.content) {
+            const content = message.content;
+            console.log('Content received:', content);
+            
+            // Create response message
+            const responseMessage = document.createElement('div');
+            responseMessage.className = 'p-2 rounded bg-light ai-message';
+            responseMessage.style.position = 'relative';
+            
+            // Update the message with content
+            if (typeof marked !== 'undefined') {
+              try {
+                responseMessage.innerHTML = marked.parse(content);
+              } catch(e) {
+                console.log('Markdown parsing failed:', e);
+                responseMessage.innerText = content;
+              }
+            } else {
+              responseMessage.innerText = content;
+            }
+            
+            // Set the final text for buttons
+            responseMessage.setAttribute('data-original-text', content);
+            
+            // Add to log
+            logEl.appendChild(responseMessage);
+            logEl.scrollTop = logEl.scrollHeight;
+            
+            // Add action buttons
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn btn-outline-secondary btn-sm copy-response-btn';
+            copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+            copyBtn.title = 'Copy response';
+            copyBtn.style.cssText = `
+              position: absolute;
+              top: 8px;
+              right: 8px;
+              padding: 4px 8px;
+              font-size: 12px;
+              border-radius: 4px;
+              opacity: 0.7;
+              transition: opacity 0.2s ease;
+              z-index: 10;
+            `;
+            
+            copyBtn.addEventListener('click', async () => {
+              try {
+                const renderedHTML = responseMessage.innerHTML.replace(copyBtn.outerHTML, '').trim();
+                
+                if (navigator.clipboard && navigator.clipboard.write) {
+                  await navigator.clipboard.write([
+                    new ClipboardItem({
+                      'text/html': new Blob([renderedHTML], { type: 'text/html' }),
+                      'text/plain': new Blob([content], { type: 'text/plain' })
+                    })
+                  ]);
+              } else {
+                  await navigator.clipboard.writeText(renderedHTML);
+                }
+                
+                copyBtn.innerHTML = '<i class="bi bi-check"></i>';
+                copyBtn.classList.remove('btn-outline-secondary');
+                copyBtn.classList.add('btn-success');
+                copyBtn.title = 'Copied formatted content!';
+                setTimeout(() => {
+                  copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                  copyBtn.classList.remove('btn-success');
+                  copyBtn.classList.add('btn-outline-secondary');
+                  copyBtn.title = 'Copy response';
+                }, 1500);
+              } catch (err) {
+                console.error('Failed to copy formatted content: ', err);
+                const textArea = document.createElement('textarea');
+                const renderedHTML = responseMessage.innerHTML.replace(copyBtn.outerHTML, '').trim();
+                textArea.value = renderedHTML;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                copyBtn.innerHTML = '<i class="bi bi-check"></i>';
+                copyBtn.classList.remove('btn-outline-secondary');
+                copyBtn.classList.add('btn-success');
+                setTimeout(() => {
+                  copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                  copyBtn.classList.remove('btn-success');
+                  copyBtn.classList.add('btn-outline-secondary');
+                }, 1500);
+              }
+            });
+            
+            // Add insert button
+            const insertBtn = document.createElement('button');
+            insertBtn.className = 'btn btn-outline-primary btn-sm copy-response-btn';
+            insertBtn.innerHTML = '<i class="bi bi-plus-square"></i>';
+            insertBtn.title = 'Insert into page and save JSON';
+            insertBtn.style.cssText = `
+              position: absolute;
+              top: 8px;
+              right: 44px;
+              padding: 4px 8px;
+              font-size: 12px;
+              border-radius: 4px;
+              opacity: 0.85;
+              transition: opacity 0.2s ease;
+              z-index: 10;
+            `;
+            
+                         insertBtn.addEventListener('click', async () => {
+               try {
+                 // Create a unique section ID
+                 const timestamp = Date.now();
+                 const sectionId = `extra-note-${timestamp}`;
+                 
+                 console.log('Insert button clicked');
+                 console.log('Response message HTML:', responseMessage.innerHTML);
+                 console.log('Copy button HTML:', copyBtn.outerHTML);
+                 console.log('Insert button HTML:', insertBtn.outerHTML);
+                 
+                 // Get the rendered HTML content (without the buttons)
+                 const renderedHTML = responseMessage.innerHTML
+                   .replace(copyBtn.outerHTML, '')
+                   .replace(insertBtn.outerHTML, '')
+                   .trim();
+                 
+                 console.log('Extracted rendered HTML:', renderedHTML);
+                 console.log('HTML length:', renderedHTML.length);
+                 
+                 // Find the Additional Sections container
+                 const additionalContentDiv = document.getElementById('additionalContent');
+                 
+                 if (additionalContentDiv) {
+                   // Create the new section
+                   const newSection = document.createElement('section');
+                   newSection.id = sectionId;
+                   newSection.className = 'additional-note p-3 p-md-4 mb-4 avoid-break';
+                   newSection.style.position = 'relative';
+                   newSection.innerHTML = `
+                     <div class="section-title">
+                       <span class="icon-circle"><i class="bi bi-sticky-fill"></i></span>
+                       <span>Study Note #${Math.floor(timestamp / 1000)}</span>
+                     </div>
+                     <div class="content-container">
+                       ${renderedHTML}
+                     </div>
+                   `;
+                   
+                   // Add to the Additional Sections container
+                   additionalContentDiv.appendChild(newSection);
+                   
+                   
+                   // Scroll to the new section
+                   newSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   
+                   // Update button to show success
+                   insertBtn.innerHTML = '<i class="bi bi-check-square"></i>';
+                   insertBtn.classList.remove('btn-outline-primary');
+                   insertBtn.classList.add('btn-success');
+                   insertBtn.title = 'Content inserted! Use Save button to persist changes.';
+                   
+                   // Show a helpful message
+                   const statusEl = document.getElementById('aiStatus');
+                   if (statusEl) {
+                     statusEl.innerHTML = '<span class="text-success"><i class="bi bi-check-circle"></i> Content added to page. Use the Save button to persist changes.</span>';
+                     setTimeout(() => {
+                       statusEl.innerHTML = '<span class="text-muted">Ready</span>';
+                     }, 3000);
+                   }
+                   
+                   setTimeout(() => {
+                     insertBtn.innerHTML = '<i class="bi bi-plus-square"></i>';
+                     insertBtn.classList.remove('btn-success');
+                     insertBtn.classList.add('btn-outline-primary');
+                     insertBtn.title = 'Insert into page';
+                   }, 2000);
+                 } else {
+                   console.error('Could not find Additional Sections container');
+                 }
+               } catch(err) { 
+                 console.error('Insert failed:', err); 
+                 alert('Failed to insert content. Please try again.');
+               }
+             });
+            
+            // Append action buttons
+            responseMessage.appendChild(insertBtn);
+            responseMessage.appendChild(copyBtn);
+            
+            // Show copy button on hover
+            responseMessage.addEventListener('mouseenter', () => {
+              copyBtn.style.opacity = '1';
+              insertBtn.style.opacity = '1';
+            });
+            responseMessage.addEventListener('mouseleave', () => {
+              copyBtn.style.opacity = '0.7';
+              insertBtn.style.opacity = '0.85';
+            });
+          } else {
+            console.log('No content in response:', responseData);
+            append('assistant', '(No content received from API.)');
+          }
+        }catch(e){ 
+          console.error(e); 
+          // Retry once on network errors
+          if (retryCount === 0) {
+            console.log('Retrying due to network error...');
+            setTimeout(() => send(1), 2000);
+            return;
+          }
+          append('assistant', 'Request failed. Check CORS and network. Error: ' + e.message); 
+        }
+        finally{ sendBtn.disabled = false; }
+      }
+      // Event listeners
+      console.log('Adding AI Chat event listeners...');
+
+      // Simple test click handler
+      if (sendBtn) {
+        console.log('Setting up send button click handler');
+        sendBtn.addEventListener('click', function(e) {
+          console.log('Send button basic click handler triggered');
+          console.log('Event target:', e.target);
+          console.log('Button disabled:', sendBtn.disabled);
+          send();
+        });
+      } else {
+        console.log('ERROR: sendBtn is null!');
+      }
+      inputEl && inputEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); console.log('Enter key pressed!'); send(); }});
+      clearBtn && clearBtn.addEventListener('click', ()=>{ 
+        logEl.innerHTML=''; 
+        messages.length=1; 
+      });
+      console.log('AI Chat event listeners added successfully');
+    })();
+
+    // In-page navigation functionality
+    (function initNavigation(){
+      // Smooth scrolling for navigation links
+      document.querySelectorAll('#pageNav a[href^="#"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href').substring(1);
+          const targetElement = document.getElementById(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+            // Update active state
+            updateActiveNavItem(this);
+          }
+        });
+      });
+
+      // Scroll to top functionality
+      const scrollToTopBtn = document.getElementById('scrollToTop');
+      if (scrollToTopBtn) {
+        scrollToTopBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          updateActiveNavItem(null);
+        });
+      }
+
+      // Update active navigation item
+      function updateActiveNavItem(activeLink) {
+        document.querySelectorAll('#pageNav a').forEach(link => {
+          link.classList.remove('active');
+          if (link.classList.contains('btn-primary')) {
+            link.classList.remove('btn-primary');
+            link.classList.add('btn-outline-primary');
+          }
+        });
+        if (activeLink) {
+          activeLink.classList.add('active');
+          activeLink.classList.remove('btn-outline-primary');
+          activeLink.classList.add('btn-primary');
+        }
+      }
+
+      // Auto-highlight navigation based on scroll position
+      let ticking = false;
+      function updateNavOnScroll() {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const sections = ['overview', 'priorities', 'diagnosis', 'investigations', 'emergency', 'management', 'cases', 'viva', 'aiChat'];
+            let currentSection = '';
+            
+            sections.forEach(sectionId => {
+              const element = document.getElementById(sectionId);
+              if (element) {
+                const rect = element.getBoundingClientRect();
+                if (rect.top <= 100 && rect.bottom >= 100) {
+                  currentSection = sectionId;
+                }
+              }
+            });
+
+            if (currentSection) {
+              const activeLink = document.querySelector(`#pageNav a[href="#${currentSection}"]`);
+              updateActiveNavItem(activeLink);
+            }
+            
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+
+      window.addEventListener('scroll', updateNavOnScroll);
+    })();
+
+    // ================== EXPORT FUNCTIONALITY ==================
+    
+    // Export functionality for vivatemplate
+    function getVivaTitle() {
+      const titleEl = document.querySelector('title');
+      if (titleEl) {
+        return titleEl.textContent.replace(/[^a-zA-Z0-9\s-]/g, '').trim();
+      }
+      return 'nephromap-viva-guide';
+    }
+    
+    // Export as HTML
+    function exportVivaAsHTML() {
+      const content = document.documentElement.outerHTML;
+      const filename = `${getVivaTitle()}.html`;
+      const blob = new Blob([content], {type: 'text/html'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showVivaExportNotification('HTML file exported successfully!', 'success');
+    }
+    
+    // Export as PDF
+    // =============================================================================
+    // PDF EXPORT FUNCTION - CUSTOMIZE THESE SETTINGS FOR YOUR NEEDS
+    // =============================================================================
+    async function exportVivaAsPDF() {
+      try {
+        showVivaExportNotification('Generating PDF...', 'info');
+        
+        // Check if jsPDF is available
+        if (!window.jspdf) {
+          throw new Error('PDF library not loaded. Please refresh the page and try again.');
+        }
+        
+        const content = document.body;
+        
+        // Hide export buttons during capture
+        const exportBtns = document.querySelectorAll('.print-hide');
+        exportBtns.forEach(btn => btn.style.display = 'none');
+        
+        // Store original styles
+        const originalStyles = {
+          bodyWidth: document.body.style.width,
+          bodyMaxWidth: document.body.style.maxWidth,
+          containerMaxWidth: [],
+          containerWidth: []
+        };
+        
+        // Get all containers and store their original styles
+        const containers = document.querySelectorAll('.container, .container-fluid');
+        containers.forEach((container, index) => {
+          originalStyles.containerMaxWidth[index] = container.style.maxWidth;
+          originalStyles.containerWidth[index] = container.style.width;
+        });
+        
+        // =============================================================================
+        // PDF CONTENT SIZE SETTINGS - ADJUST THESE VALUES
+        // =============================================================================
+        
+        // Page size settings
+        const PDF_SETTINGS = {
+          // Page format: 'a4', 'letter', 'legal', or custom [width, height] in mm
+          pageFormat: 'A4',                    // â† CHANGE PAGE SIZE HERE
+          
+          // Page orientation: 'portrait' or 'landscape'
+          orientation: 'portrait',             // â† CHANGE ORIENTATION HERE
+          
+          // Content width in pixels - Set to A4 width for full-page usage
+          contentWidth: 794,                   // â† A4 width in pixels (794px = 210mm)
+          
+          // Side margins in pixels (reduced for full-width usage)
+          sideMargins: 10,                     // â† ADJUST SIDE MARGINS HERE
+          
+          // Canvas scale factor (higher = better quality, larger file)
+          canvasScale: 2,                      // â† ADJUST QUALITY HERE (1-3)
+          
+          // ASCII flowchart font size for PDF
+          asciiFontSize: '10px',               // â† ADJUST ASCII TEXT SIZE HERE
+          
+          // ASCII flowchart line height
+          asciiLineHeight: '1.2',              // â† ADJUST ASCII LINE SPACING HERE
+          
+          // ASCII flowchart padding
+          asciiPadding: '10px',                // â† ADJUST ASCII PADDING HERE
+        };
+        
+        // Set full width styles for PDF capture
+        document.body.style.width = PDF_SETTINGS.contentWidth + 'px';
+        document.body.style.maxWidth = PDF_SETTINGS.contentWidth + 'px';
+        
+        containers.forEach(container => {
+          container.style.maxWidth = PDF_SETTINGS.contentWidth + 'px';
+          container.style.width = PDF_SETTINGS.contentWidth + 'px';
+          container.style.padding = PDF_SETTINGS.sideMargins + 'px';
+          container.style.margin = '0 auto';
+        });
+        
+        // Handle ASCII flowcharts specifically
+        const asciiFlows = document.querySelectorAll('.ascii-flow');
+        const originalAsciiStyles = [];
+        asciiFlows.forEach((ascii, index) => {
+          originalAsciiStyles[index] = {
+            fontSize: ascii.style.fontSize,
+            lineHeight: ascii.style.lineHeight,
+            whiteSpace: ascii.style.whiteSpace,
+            wordBreak: ascii.style.wordBreak,
+            maxWidth: ascii.style.maxWidth,
+            padding: ascii.style.padding
+          };
+          
+          // Apply PDF-optimized ASCII styles using settings
+          ascii.style.fontSize = PDF_SETTINGS.asciiFontSize;
+          ascii.style.lineHeight = PDF_SETTINGS.asciiLineHeight;
+          ascii.style.whiteSpace = 'pre-wrap';
+          ascii.style.wordBreak = 'break-all';
+          ascii.style.maxWidth = '100%';
+          ascii.style.padding = PDF_SETTINGS.asciiPadding;
+          ascii.style.boxSizing = 'border-box';
+        });
+        
+        // Force layout recalculation
+        document.body.offsetHeight;
+        
+        // Create canvas from content using settings
+        const canvas = await html2canvas(content, {
+          scale: PDF_SETTINGS.canvasScale,           // â† QUALITY SETTING
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: PDF_SETTINGS.contentWidth,          // â† CONTENT WIDTH
+          windowWidth: PDF_SETTINGS.contentWidth,    // â† WINDOW WIDTH
+          scrollX: 0,
+          scrollY: 0
+        });
+        
+        // Restore original styles
+        exportBtns.forEach(btn => btn.style.display = '');
+        document.body.style.width = originalStyles.bodyWidth;
+        document.body.style.maxWidth = originalStyles.bodyMaxWidth;
+        
+        containers.forEach((container, index) => {
+          container.style.maxWidth = originalStyles.containerMaxWidth[index];
+          container.style.width = originalStyles.containerWidth[index];
+          container.style.padding = '';
+          container.style.margin = '';
+        });
+        
+        // Restore ASCII flowchart styles
+        asciiFlows.forEach((ascii, index) => {
+          if (originalAsciiStyles[index]) {
+            ascii.style.fontSize = originalAsciiStyles[index].fontSize;
+            ascii.style.lineHeight = originalAsciiStyles[index].lineHeight;
+            ascii.style.whiteSpace = originalAsciiStyles[index].whiteSpace;
+            ascii.style.wordBreak = originalAsciiStyles[index].wordBreak;
+            ascii.style.maxWidth = originalAsciiStyles[index].maxWidth;
+            ascii.style.padding = originalAsciiStyles[index].padding;
+            ascii.style.boxSizing = '';
+          }
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        
+        // Create PDF with customizable settings
+        const pdf = new jsPDF({
+          orientation: PDF_SETTINGS.orientation,      // â† ORIENTATION SETTING
+          unit: 'mm',
+          format: PDF_SETTINGS.pageFormat             // â† PAGE FORMAT SETTING
+        });
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();  
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        
+        // Use full width of A4, calculate height proportionally
+        const finalWidth = pdfWidth;
+        const finalHeight = (imgHeight * pdfWidth) / imgWidth;
+        
+        // Handle multi-page PDF if content is too long
+        if (finalHeight > pdfHeight) {
+          const totalPages = Math.ceil(finalHeight / pdfHeight);
+          for (let page = 0; page < totalPages; page++) {
+            if (page > 0) pdf.addPage();
+            const yOffset = -page * pdfHeight;
+            // Draw the same image, shifting it upward each page so it fills full width
+            pdf.addImage(imgData, 'PNG', 0, yOffset, finalWidth, finalHeight);
+          }
+        } else {
+          // Content fits on one page - use full width, center vertically
+          const yOffset = Math.max(0, (pdfHeight - finalHeight) / 2);
+          pdf.addImage(imgData, 'PNG', 0, yOffset, finalWidth, finalHeight);
+        }
+        
+        pdf.save(`${getVivaTitle()}.pdf`);
+        showVivaExportNotification('PDF exported successfully!', 'success');
+      } catch (error) {
+        console.error('PDF export failed:', error);
+        showVivaExportNotification('PDF export failed. Please try again.', 'error');
+      }
+    }
+    
+    // Export as Image
+    async function exportVivaAsImage() {
+      try {
+        showVivaExportNotification('Generating image...', 'info');
+        
+        // Check if html2canvas is available
+        if (!window.html2canvas) {
+          throw new Error('Image capture library not loaded. Please refresh the page and try again.');
+        }
+        
+        const content = document.body;
+        
+        const canvas = await html2canvas(content, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff'
+        });
+        
+        canvas.toBlob((blob) => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `${getVivaTitle()}.png`;
+          a.click();
+          URL.revokeObjectURL(a.href);
+          showVivaExportNotification('Image exported successfully!', 'success');
+        }, 'image/png');
+        
+      } catch (error) {
+        console.error('Image export failed:', error);
+        showVivaExportNotification('Image export failed. Please try again.', 'error');
+      }
+    }
+    
+    // Print function
+    function printVivaContent() {
+      window.print();
+      showVivaExportNotification('Print dialog opened!', 'info');
+    }
+    
+    // Add print footer function
+    function addPrintFooter() {
+      // Check if footer already exists
+      if (document.querySelector('.print-footer')) {
+        return;
+      }
+      
+      const footer = document.createElement('div');
+      footer.className = 'print-footer';
+      footer.style.cssText = `
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 10px;
+        color: #666;
+        background: white;
+        padding: 5px;
+        border-top: 1px solid #ccc;
+        display: none;
+      `;
+      
+      // Add print-specific styles
+      const style = document.createElement('style');
+      style.textContent = `
+        @media print {
+          .print-footer {
+            display: block !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      footer.innerHTML = `
+        <p>Generated from NephroApp - ${window.location.origin}</p>
+        <p>Page {page} of {pages}</p>
+      `;
+      
+      document.body.appendChild(footer);
+    }
+    
+    // Show export notification
+    function showVivaExportNotification(message, type = 'info') {
+      // Create or update notification
+      let notification = document.getElementById('vivaExportNotification');
+      if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'vivaExportNotification';
+        notification.style.cssText = `
+          position: fixed;
+          top: 80px;
+          right: 20px;
+          padding: 12px 20px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 500;
+          z-index: 1060;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+          opacity: 0;
+          pointer-events: none;
+          max-width: 300px;
+        `;
+        document.body.appendChild(notification);
+      }
+      
+      // Set color based on type
+      const colors = {
+        success: 'background: #28a745; color: white;',
+        error: 'background: #dc3545; color: white;',
+        info: 'background: #007bff; color: white;'
+      };
+      
+      notification.style.cssText += colors[type] || colors.info;
+      notification.textContent = message;
+      notification.style.opacity = '1';
+      
+      setTimeout(() => {
+        notification.style.opacity = '0';
+      }, 3000);
+    }
+    
+    function pruneOptionalSections() {
+      const optionalSections = document.querySelectorAll('[data-optional-section]');
+      optionalSections.forEach(section => {
+        const contentNodes = section.querySelectorAll('[data-optional-content]');
+        const blockNodes = section.querySelectorAll('[data-optional-block]');
+        let hasContent = false;
+        contentNodes.forEach(node => {
+          if (!node.innerHTML.trim()) {
+            node.remove();
+          } else {
+            hasContent = true;
+          }
+        });
+        blockNodes.forEach(node => {
+          if (!node.innerHTML.trim()) {
+            node.remove();
+          } else {
+            hasContent = true;
+          }
+        });
+        if (!hasContent && !section.matches('[id="topic-header"]')) {
+          section.remove();
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', pruneOptionalSections);
+    // Export event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Debug library availability
+      console.log('Libraries loaded:', {
+        jsPDF: !!window.jspdf,
+        html2canvas: !!window.html2canvas,
+        bootstrap: !!window.bootstrap
+      });
+      
+      const exportVivaHTML = document.getElementById('exportVivaHTML');
+      const exportVivaPDF = document.getElementById('exportVivaPDF');
+      const exportVivaImage = document.getElementById('exportVivaImage');
+      const exportVivaPrint = document.getElementById('exportVivaPrint');
+      
+      if (exportVivaHTML) exportVivaHTML.addEventListener('click', (e) => { e.preventDefault(); exportVivaAsHTML(); });
+      if (exportVivaPDF) exportVivaPDF.addEventListener('click', (e) => { e.preventDefault(); exportVivaAsPDF(); });
+      if (exportVivaImage) exportVivaImage.addEventListener('click', (e) => { e.preventDefault(); exportVivaAsImage(); });
+      if (exportVivaPrint) exportVivaPrint.addEventListener('click', (e) => { e.preventDefault(); printVivaContent(); });
+      
+      // Initialize page search functionality
+      initPageSearch();
+      
+      
+      // Add print footer
+      setTimeout(addPrintFooter, 1000);
+      
+      console.log('Viva export dropdown, search, and print footer functionality initialized');
+    });
+    
+    // ================== PAGE SEARCH FUNCTIONALITY ==================
+    
+    // Global variables for page search
+    let searchTimeout = null;
+    let currentSearchIndex = 0;
+    let searchResults = [];
+    
+    // Initialize page search functionality
+    function initPageSearch() {
+      const searchInput = document.getElementById('pageSearchInput');
+      const searchClear = document.getElementById('pageSearchClear');
+      const searchInfo = document.getElementById('searchInfo');
+      
+      if (!searchInput) return;
+      
+      // Search input event
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        
+        // Clear previous timeout
+        if (searchTimeout) {
+          clearTimeout(searchTimeout);
+        }
+        
+        // Debounce search
+        searchTimeout = setTimeout(() => {
+          performPageSearch(query);
+        }, 300);
+      });
+      
+      // Clear search button
+      searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        clearPageSearch();
+      });
+      
+      // Keyboard shortcuts
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          searchInput.value = '';
+          clearPageSearch();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (searchResults.length > 0) {
+            navigateToNextSearchResult();
+          }
+        } else if (e.key === 'F3' || (e.ctrlKey && e.key === 'g')) {
+          e.preventDefault();
+          if (searchResults.length > 0) {
+            navigateToNextSearchResult();
+          }
+        }
+      });
+      
+      // Ctrl+F to focus search
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'f') {
+          e.preventDefault();
+          searchInput.focus();
+          searchInput.select();
+        }
+      });
+    }
+    
+    // Perform search within the page
+    function performPageSearch(query) {
+      if (!query) {
+        clearPageSearch();
+        return;
+      }
+      
+      // Clear previous highlights
+      clearPageSearch();
+      
+      // Search in all text content
+      const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT,
+        {
+          acceptNode: function(node) {
+            // Skip script and style tags
+            if (node.parentElement.tagName === 'SCRIPT' || 
+                node.parentElement.tagName === 'STYLE' ||
+                node.parentElement.classList.contains('search-highlight')) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        }
+      );
+      
+      const textNodes = [];
+      let node;
+      while (node = walker.nextNode()) {
+        textNodes.push(node);
+      }
+      
+      // Find matches
+      searchResults = [];
+      textNodes.forEach(textNode => {
+        const text = textNode.textContent;
+        const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
+        let match;
+        
+        while ((match = regex.exec(text)) !== null) {
+          searchResults.push({
+            node: textNode,
+            start: match.index,
+            end: match.index + match[0].length,
+            text: match[0]
+          });
+        }
+      });
+      
+      // Highlight matches
+      highlightSearchResults();
+      
+      // Update search info
+      updateSearchInfo();
+      
+      // Navigate to first result
+      if (searchResults.length > 0) {
+        currentSearchIndex = 0;
+        navigateToSearchResult(0);
+      }
+    }
+    
+    // Highlight search results
+    function highlightSearchResults() {
+      searchResults.forEach((result, index) => {
+        const textNode = result.node;
+        const parent = textNode.parentNode;
+        const text = textNode.textContent;
+        
+        // Create highlighted span
+        const highlightedText = text.substring(0, result.start) +
+          `<span class="search-highlight" data-search-index="${index}">` +
+          text.substring(result.start, result.end) +
+          '</span>' +
+          text.substring(result.end);
+        
+        // Replace text node with highlighted HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = highlightedText;
+        
+        // Replace the text node with the highlighted content
+        while (tempDiv.firstChild) {
+          parent.insertBefore(tempDiv.firstChild, textNode);
+        }
+        parent.removeChild(textNode);
+      });
+    }
+    
+    // Navigate to specific search result
+    function navigateToSearchResult(index) {
+      if (index < 0 || index >= searchResults.length) return;
+      
+      // Remove current highlight
+      const currentHighlight = document.querySelector('.search-highlight.current');
+      if (currentHighlight) {
+        currentHighlight.classList.remove('current');
+      }
+      
+      // Add current highlight
+      const targetHighlight = document.querySelector(`[data-search-index="${index}"]`);
+      if (targetHighlight) {
+        targetHighlight.classList.add('current');
+        targetHighlight.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+      }
+      
+      currentSearchIndex = index;
+      updateSearchInfo();
+    }
+    
+    // Navigate to next search result
+    function navigateToNextSearchResult() {
+      if (searchResults.length === 0) return;
+      const nextIndex = (currentSearchIndex + 1) % searchResults.length;
+      navigateToSearchResult(nextIndex);
+    }
+    
+    // Navigate to previous search result
+    function navigateToPreviousSearchResult() {
+      if (searchResults.length === 0) return;
+      const prevIndex = currentSearchIndex <= 0 ? searchResults.length - 1 : currentSearchIndex - 1;
+      navigateToSearchResult(prevIndex);
+    }
+    
+    // Clear page search
+    function clearPageSearch() {
+      // Remove all search highlights
+      const highlights = document.querySelectorAll('.search-highlight');
+      highlights.forEach(highlight => {
+        const parent = highlight.parentNode;
+        parent.replaceChild(document.createTextNode(highlight.textContent), highlight);
+        parent.normalize(); // Merge adjacent text nodes
+      });
+      
+      // Reset search state
+      searchResults = [];
+      currentSearchIndex = 0;
+      
+      // Hide search info
+      const searchInfo = document.getElementById('searchInfo');
+      if (searchInfo) {
+        searchInfo.style.display = 'none';
+      }
+    }
+    
+    // Update search info display
+    function updateSearchInfo() {
+      const searchInfo = document.getElementById('searchInfo');
+      const searchCount = document.getElementById('searchCount');
+      
+      if (searchInfo && searchCount) {
+        if (searchResults.length > 0) {
+          searchCount.textContent = `${currentSearchIndex + 1} of ${searchResults.length}`;
+          searchInfo.style.display = 'block';
+        } else {
+          searchInfo.style.display = 'none';
+        }
+      }
+    }
+    
+    // Escape regex special characters
+    function escapeRegex(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+    
+    // ================== END PAGE SEARCH FUNCTIONALITY ==================
+    
+    
+    
+    
+
+    
+    // ================== END EXPORT FUNCTIONALITY ==================
+    
+    // ================== ENHANCE EXISTING ADDITIONAL NOTES ==================
+    // Apply enhanced styling to existing additional notes
+    function enhanceExistingAdditionalNotes() {
+      console.log('Enhancing existing additional notes...');
+      
+      // Find all existing additional notes
+      const existingNotes = document.querySelectorAll('section[id^="extra-note-"]');
+      
+      existingNotes.forEach(note => {
+        // Add the additional-note class for consistency
+        note.classList.add('additional-note');
+        
+        // Ensure proper positioning for notes
+        note.style.position = 'relative';
+        
+        // Update the content container class if needed
+        const contentContainer = note.querySelector('.border.rounded.p-3.bg-white');
+        if (contentContainer) {
+          contentContainer.classList.add('content-container');
+        }
+        
+        console.log('Enhanced note:', note.id);
+      });
+      
+      console.log('Enhanced', existingNotes.length, 'existing additional notes');
+    }
+    
+    // Run enhancement when DOM is loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', enhanceExistingAdditionalNotes);
+    } else {
+      enhanceExistingAdditionalNotes();
+    }
+    
+    // ================== END ENHANCE EXISTING ADDITIONAL NOTES ==================
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+

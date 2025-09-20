@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ config('app.name', 'NephroCoach') }} | {{ content('site_tagline', 'Expert Medical Training Platform') }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card { backdrop-filter: blur(16px); background: rgba(255,255,255,0.85); }
+    </style>
+</head>
+<body class="antialiased bg-slate-950 text-slate-900">
+    <div class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 via-sky-500 to-purple-500 opacity-80"></div>
+        <div class="absolute -left-40 top-10 h-72 w-72 rounded-full bg-white/20 blur-3xl"></div>
+        <div class="absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-purple-500/20 blur-3xl"></div>
+
+        <header class="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 py-8 flex items-center justify-between">
+            <a href="{{ route('topics.index') }}" class="inline-flex items-center gap-3 text-white">
+                <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 shadow-lg ring-1 ring-white/20">
+                    <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m9-9H3" />
+                    </svg>
+                </span>
+                <div>
+                    <p class="text-xl font-semibold tracking-tight">{{ config('app.name', 'NephroCoach') }}</p>
+                    <p class="text-xs uppercase tracking-[0.2em] text-white/70">{{ content('site_tagline', 'Expert Medical Training Platform') }}</p>
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center gap-6 text-sm text-white/80">
+                <a href="#curriculum" class="hover:text-white transition">Curriculum</a>
+                <a href="#format" class="hover:text-white transition">Exam Simulation</a>
+                <a href="#mentor" class="hover:text-white transition">Your Mentor</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full border border-white/30 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 transition">
+                    <span>{{ __('Log in to start studying') }}</span>
+                </a>
+                @if (\App\Support\AuthSettings::allowsEmailRegistration())
+                    <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-indigo-600 shadow-lg shadow-indigo-500/30 hover:bg-slate-100 transition">
+                        {{ __('Create free account') }}
+                    </a>
+                @endif
+            </div>
+        </header>
+
+        <main class="relative z-10">
+            <section class="max-w-6xl mx-auto px-6 sm:px-10 pt-12 pb-24 text-white">
+                <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+                    <div class="space-y-6">
+                        <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium">
+                            <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                            {{ __('Designed for SCHS Nephrology Oral Exam Success') }}
+                        </span>
+                        <h1 class="text-4xl sm:text-5xl font-bold leading-tight">
+                            {{ content('hero_title', 'Master Clinical Nephrology with Expert-Crafted Scenarios') }}
+                        </h1>
+                        <p class="text-lg text-white/80 leading-relaxed">
+                            {{ content('hero_subtitle', 'Dive deep into real-world nephrology cases with interactive scenarios designed by leading experts. Perfect your clinical reasoning and diagnostic skills.') }}
+                        </p>
+                        <div class="flex flex-wrap items-center gap-4">
+                            <a href="{{ route('login') }}" class="inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-semibold text-indigo-600 shadow-xl shadow-indigo-500/40 hover:bg-slate-100 transition">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7H5" />
+                                </svg>
+                                {{ content('hero_cta_primary', 'Get Started') }}
+                            </a>
+                            <div class="flex items-center gap-2 text-sm text-white/70">
+                                <svg class="h-5 w-5 text-emerald-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                {{ __('Tailored for SCHS Consultant Exam format') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card rounded-3xl border border-white/30 p-8 shadow-2xl shadow-indigo-900/30">
+                        <h3 class="text-xl font-semibold text-indigo-950 mb-4">{{ __('What you will practice inside NephroCoach') }}</h3>
+                        <ul class="space-y-3 text-slate-700">
+                            <li class="flex items-start gap-3">
+                                <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
+                                <span>{{ __('Simulated oral exam stations covering acute kidney emergencies, dialysis dilemmas, transplant medicine, and glomerular diseases.') }}</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
+                                <span>{{ __('Scoring rubrics and consultant-level feedback scripts so you answer with precision and confidence.') }}</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
+                                <span>{{ __('High-yield flash overviews with �examiner tips� and �trick questions� pulled from real board experiences.') }}</span>
+                            </li>
+                        </ul>
+                        <div class="mt-8 grid gap-4 sm:grid-cols-2">
+                            <div class="rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700/80 p-4 text-white shadow-lg">
+                                <p class="text-xs uppercase tracking-widest text-white/70">{{ __('Topic Coverage') }}</p>
+                                <p class="mt-2 text-2xl font-semibold">{{ __('60+ Oral Scenarios') }}</p>
+                                <p class="text-xs text-white/80">{{ __('Continuous updates whenever exam patterns evolve.') }}</p>
+                            </div>
+                            <div class="rounded-2xl bg-white/90 p-4 text-slate-900 shadow-lg">
+                                <p class="text-xs uppercase tracking-widest text-slate-500">{{ __('Performance Insights') }}</p>
+                                <p class="mt-2 text-2xl font-semibold">{{ __('Structured Answer Frameworks') }}</p>
+                                <p class="text-xs text-slate-600">{{ __('Know exactly how to deliver your response in under 3 minutes.') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <section id="curriculum" class="bg-slate-50 py-20">
+        <div class="max-w-6xl mx-auto px-6 sm:px-10">
+            <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+                <div class="space-y-6">
+                    <span class="inline-flex items-center gap-2 rounded-full bg-indigo-100 px-4 py-1 text-xs font-semibold text-indigo-700">{{ __('Curriculum Blueprint') }}</span>
+                    <h2 class="text-3xl font-bold text-slate-900">{{ __('A guided path through every high-yield nephrology topic') }}</h2>
+                    <p class="text-base text-slate-600 leading-relaxed">{{ __('NephroCoach is structured by exam domains so you never guess what to revise next. Jump into transplant complications, electrolyte crises, GN differentials, or renal replacement therapy with scenario-driven Q&A and oral board cheatsheets.') }}</p>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                            <h3 class="text-lg font-semibold text-indigo-600">{{ __('Scenario Playbooks') }}</h3>
+                            <p class="mt-2 text-sm text-slate-600">{{ __('Walk through consultant-style questioning: start with the examiners� stem, hit the key investigations, and finish with management pearls.') }}</p>
+                        </div>
+                        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                            <h3 class="text-lg font-semibold text-indigo-600">{{ __('Rapid Recall Cards') }}</h3>
+                            <p class="mt-2 text-sm text-slate-600">{{ __('One-page summaries for GN classes, transplant immunology, HD emergencies, and ICU nephrology so you can refresh in minutes.') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-2xl">
+                    <h3 class="text-xl font-semibold text-slate-900">{{ __('Sample Topic Library') }}</h3>
+                    <ul class="mt-6 space-y-4 text-slate-700">
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
+                            <span><strong>{{ __('Renal Transplant:') }}</strong> {{ __('Banff IIB cellular rejection, tacrolimus toxicity, delayed graft function, and atypical infections in the immunosuppressed patient.') }}</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
+                            <span><strong>{{ __('Dialysis & ICU:') }}</strong> {{ __('CRRT prescription, stormy hyperkalemia, malignant hypertension crises, and managing sepsis in ESRD patients.') }}</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
+                            <span><strong>{{ __('Glomerular Clinic:') }}</strong> {{ __('Rapidly progressive GN, lupus flare vs. infection, ANCA vasculitis, and pregnancy-associated renal disease.') }}</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
+                            <span><strong>{{ __('Metabolic Mastery:') }}</strong> {{ __('Complex acid�base puzzles, polyuric AKI after transplant, phosphate storms, and resistant hyponatremia strategies.') }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="format" class="bg-white py-20">
+        <div class="max-w-6xl mx-auto px-6 sm:px-10 grid gap-12 lg:grid-cols-3">
+            <div class="lg:col-span-1 space-y-4">
+                <span class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-1 text-xs font-semibold text-emerald-700">{{ __('Exam Day Simulation') }}</span>
+                <h2 class="text-3xl font-bold text-slate-900">{{ __('Train exactly how you will be tested') }}</h2>
+                <p class="text-base text-slate-600 leading-relaxed">{{ __('Each station is timed, scripted, and benchmarked against real consultant expectations. You will know the must-say phrases, red-flag omissions, and how to pivot when examiners push deeper.') }}</p>
+            </div>
+            <div class="lg:col-span-2 grid gap-6 md:grid-cols-2">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-slate-900">{{ __('Timed Oral Stations') }}</h3>
+                    <p class="mt-3 text-sm text-slate-600">{{ __('Practice 7-minute oral scenarios with live prompts. Get structured feedback tailored to SCHS scoring rubrics.') }}</p>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-slate-900">{{ __('Consultant-Level Feedback') }}</h3>
+                    <p class="mt-3 text-sm text-slate-600">{{ __('Receive phrases that impress examiners, critical pitfalls to avoid, and suggested follow-up investigations.') }}</p>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-slate-900">{{ __('Adaptive Question Bank') }}</h3>
+                    <p class="mt-3 text-sm text-slate-600">{{ __('Focus on weaker domains. The platform highlights frequent SCHS themes and evolves with each exam season.') }}</p>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-slate-900">{{ __('Peer & Mentor Sessions') }}</h3>
+                    <p class="mt-3 text-sm text-slate-600">{{ __('Join live virtual rooms to rehearse with fellow nephrologists and consultants who passed the exam.') }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="mentor" class="bg-slate-900 py-20 text-white">
+        <div class="max-w-5xl mx-auto px-6 sm:px-10 grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] items-start">
+            <div class="relative">
+                <div class="absolute -inset-3 rounded-3xl bg-indigo-500/30 blur-xl"></div>
+                <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=600&q=80" alt="Dr Hossam Abohassan" class="relative rounded-3xl object-cover shadow-2xl">
+            </div>
+            <div class="space-y-6">
+                <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-xs font-semibold">{{ __('Your Mentor') }}</span>
+                <h2 class="text-3xl font-bold">{{ __('Meet Dr. Hossam Abohassan, Consultant Nephrologist') }}</h2>
+                <p class="text-base text-white/80 leading-relaxed">{{ __('With over a decade guiding nephrologists through the SCHS consultant pathway, Dr. Hossam designed NephroCoach to deliver the practical wisdom, examiner expectations, and real bedside judgment that textbooks miss. Every scenario is polished by his direct board experience.') }}</p>
+                <blockquote class="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm leading-6 text-white/80">
+                    �{{ __('A confident consultant answers concisely, anticipates the examiner�s next question, and anchors every decision in patient safety. My promise is to help you internalize that mindset before exam day.') }}�
+                </blockquote>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.3em] text-white/50">{{ __('WhatsApp Support') }}</p>
+                        <p class="mt-1 text-xl font-semibold">+966 53 987 3567</p>
+                        <p class="text-xs text-white/60">{{ __('Reach Dr. Hossam on WhatsApp for enrollment details and mentorship slots.') }}</p>
+                    </div>
+                    <a href="https://wa.me/966539873567" class="inline-flex items-center gap-3 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/40 hover:bg-emerald-400 transition">
+                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.672.15-.198.297-.769.966-.944 1.164-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.173.198-.297.298-.495.099-.198.05-.371-.025-.52-.074-.149-.672-1.616-.92-2.212-.242-.579-.487-.5-.672-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.793.372-.272.297-1.04 1.016-1.04 2.478 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.262.49 1.694.628.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.247-.694.247-1.287.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 4.617h-.004a8.61 8.61 0 01-4.38-1.197l-.313-.186-3.252.853.867-3.18-.203-.327a8.566 8.566 0 01-1.312-4.598c0-4.734 3.856-8.59 8.598-8.59 2.296 0 4.451.893 6.073 2.515a8.544 8.544 0 012.526 6.065c-.003 4.734-3.859 8.59-8.6 8.59m7.254-15.842A9.868 9.868 0 0012.05 2C6.495 2 1.91 6.584 1.91 12.14c0 1.967.518 3.889 1.503 5.582L2 22l4.401-1.153a9.818 9.818 0 004.596 1.176h.004c5.555 0 10.14-4.584 10.14-10.14 0-2.711-1.056-5.258-2.976-7.178" />
+                        </svg>
+                        {{ __('Message on WhatsApp') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-950 py-10">
+        <div class="max-w-6xl mx-auto px-6 sm:px-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 text-sm text-slate-400">
+            <p>{{ content('footer_text', '© ' . date('Y') . ' NephroCoach. All rights reserved.') }}</p>
+            <p>{{ __('Crafted for Saudi nephrologists determined to lead.') }}</p>
+        </div>
+    </footer>
+</body>
+</html>

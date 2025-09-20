@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Topic extends Model
+{
+    use HasFactory;
+
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_REVIEW = 'review';
+    public const STATUS_PUBLISHED = 'published';
+
+    protected $fillable = [
+        'template_id',
+        'created_by',
+        'updated_by',
+        'slug',
+        'title',
+        'subtitle',
+        'status',
+        'summary',
+        'data',
+        'meta',
+        'rendered_html',
+        'rendered_at',
+        'published_at',
+    ];
+
+    protected $casts = [
+        'data' => 'array',
+        'meta' => 'array',
+        'rendered_at' => 'datetime',
+        'published_at' => 'datetime',
+    ];
+
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(Template::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function editor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', self::STATUS_PUBLISHED);
+    }
+
+    public function scopeVisible(Builder $query): Builder
+    {
+        return $query->whereIn('status', [self::STATUS_PUBLISHED, self::STATUS_REVIEW]);
+    }
+
+    public function markPublished(): void
+    {
+        $this->forceFill([
+            'status' => self::STATUS_PUBLISHED,
+            'published_at' => now(),
+        ])->save();
+    }
+}
+
