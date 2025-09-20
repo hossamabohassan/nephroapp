@@ -132,3 +132,4 @@ echo "<li><a href='fix-permissions.php'>Fix File Permissions</a></li>";
 echo "<li><a href='regenerate-app-key.php'>Regenerate APP_KEY</a></li>";
 echo "</ul>";
 ?>
+

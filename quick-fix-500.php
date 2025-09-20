@@ -117,3 +117,4 @@ echo "<li><a href='debug-current-500.php'>🔍 Debug Again</a></li>";
 echo "</ul>";
 echo "</div>";
 ?>
+

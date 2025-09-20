@@ -88,3 +88,4 @@ echo "<li><a href='index.php'>Test Main Site</a></li>";
 echo "<li><a href='debug-current-500.php'>Debug 500 Error</a></li>";
 echo "</ul>";
 ?>
+

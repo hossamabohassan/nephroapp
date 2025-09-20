@@ -106,3 +106,4 @@ echo "<li><a href='clear-all-caches.php'>Clear All Caches</a></li>";
 echo "<li><a href='create-tables-manually.php'>Create Database Tables</a></li>";
 echo "</ul>";
 ?>
+

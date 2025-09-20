@@ -103,3 +103,4 @@ echo "<li><a href='disable-htaccess.php'>Disable .htaccess again</a></li>";
 echo "<li><a href='debug-current-500.php'>Debug the 500 error</a></li>";
 echo "</ul>";
 ?>
+

@@ -77,3 +77,4 @@ echo "<li>Access pages directly: <code>index.php</code></li>";
 echo "<li>Use query parameters: <code>index.php?page=topics</code></li>";
 echo "</ul>";
 ?>
+

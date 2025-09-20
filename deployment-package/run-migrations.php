@@ -83,3 +83,4 @@ echo "<li>✅ Laravel app ready to use</li>";
 echo "</ul>";
 echo "</div>";
 ?>
+

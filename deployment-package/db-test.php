@@ -75,3 +75,4 @@ try {
     echo "❌ Connection to MySQL server failed: " . $e->getMessage() . "<br>";
 }
 ?>
+

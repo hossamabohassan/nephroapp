@@ -88,3 +88,4 @@ echo "<li><a href='index.php'>🚀 Visit Main Site</a></li>";
 echo "<li><a href='debug-500.php'>🔍 Debug Again</a></li>";
 echo "</ul>";
 ?>
+

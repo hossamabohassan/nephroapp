@@ -57,3 +57,4 @@ echo "<li><a href='disable-htaccess.php'>Disable .htaccess completely</a></li>";
 echo "<li>Run your Laravel app without URL rewriting</li>";
 echo "</ul>";
 ?>
+

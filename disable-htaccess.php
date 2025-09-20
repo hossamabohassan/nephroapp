@@ -60,3 +60,4 @@ echo "<li><a href='debug-current-500.php'>Debug the 500 error again</a></li>";
 echo "<li><a href='check-vendor-directory.php'>Check vendor directory</a></li>";
 echo "</ul>";
 ?>
+

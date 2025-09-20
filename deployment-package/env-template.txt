@@ -20,3 +20,4 @@ LOG_CHANNEL=stack
 LOG_LEVEL=error
 
 MAIL_MAILER=log
+

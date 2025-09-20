@@ -68,3 +68,4 @@ echo "<li><a href='index.php'>Try main site</a></li>";
 echo "<li><a href='temp-disable-db.php'>Disable database temporarily</a></li>";
 echo "</ul>";
 ?>
+

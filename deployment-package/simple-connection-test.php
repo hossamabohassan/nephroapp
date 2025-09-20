@@ -50,3 +50,4 @@ echo "<li><a href='clear-cache.php'>Clear Laravel caches</a></li>";
 echo "<li><a href='index.php'>Try main site</a></li>";
 echo "</ul>";
 ?>
+

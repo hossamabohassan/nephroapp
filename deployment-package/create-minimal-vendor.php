@@ -104,3 +104,4 @@ echo "<li>Or run <code>composer install</code> on your server</li>";
 echo "</ol>";
 echo "</div>";
 ?>
+

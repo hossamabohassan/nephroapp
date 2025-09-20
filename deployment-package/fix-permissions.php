@@ -70,3 +70,4 @@ echo "<li><a href='debug-500.php'>Debug 500 Error Again</a></li>";
 echo "</ul>";
 echo "</div>";
 ?>
+

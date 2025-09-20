@@ -115,3 +115,4 @@ echo "<li><a href='fix-vendor-directory.php'>Fix Vendor Directory</a></li>";
 echo "<li><a href='debug-current-500.php'>Debug Again</a></li>";
 echo "</ul>";
 ?>
+

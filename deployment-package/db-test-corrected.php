@@ -74,3 +74,4 @@ try {
     echo "❌ Database connection with SSL options failed: " . $e->getMessage() . "<br>";
 }
 ?>
+

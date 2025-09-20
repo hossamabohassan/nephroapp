@@ -117,3 +117,4 @@ echo "<li><a href='index.php'>Visit your main Laravel site</a></li>";
 echo "<li><a href='temp-disable-db.php'>Temporarily disable database (if connection fails)</a></li>";
 echo "</ul>";
 ?>
+

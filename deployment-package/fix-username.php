@@ -73,3 +73,4 @@ if (file_exists('.env')) {
     echo "<p>Please make sure you uploaded the .env file to your server.</p>";
 }
 ?>
+

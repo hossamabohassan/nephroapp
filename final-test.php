@@ -124,3 +124,4 @@ echo "<li>✅ Laravel app fully functional</li>";
 echo "</ul>";
 echo "</div>";
 ?>
+

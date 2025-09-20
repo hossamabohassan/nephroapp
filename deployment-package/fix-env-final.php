@@ -58,3 +58,4 @@ if (file_exists('.env')) {
     echo "<p>You can create one by copying from <code>env-template.txt</code> and renaming it to <code>.env</code></p>";
 }
 ?>
+

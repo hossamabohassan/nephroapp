@@ -51,3 +51,4 @@ echo "<li><a href='disable-htaccess.php'>Disable .htaccess Temporarily</a></li>"
 echo "<li><a href='create-simple-htaccess.php'>Create Simple .htaccess</a></li>";
 echo "</ul>";
 ?>
+

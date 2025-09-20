@@ -109,3 +109,4 @@ echo "<li><a href='simple-connection-test.php'>Test Database Again</a></li>";
 echo "</ul>";
 echo "</div>";
 ?>
+
